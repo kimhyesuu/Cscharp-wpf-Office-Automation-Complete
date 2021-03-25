@@ -1,0 +1,7 @@
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.CreatingProject\bin\Debug\OfficeAutomation.Sample.CreatingProject.exe.config
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.CreatingProject\bin\Debug\OfficeAutomation.Sample.CreatingProject.exe
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.CreatingProject\bin\Debug\OfficeAutomation.Sample.CreatingProject.pdb
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.CreatingProject\obj\Debug\OfficeAutomation.Sample.CreatingProject.csprojAssemblyReference.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.CreatingProject\obj\Debug\OfficeAutomation.Sample.CreatingProject.csproj.CoreCompileInputs.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.CreatingProject\obj\Debug\OfficeAutomation.Sample.CreatingProject.exe
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.CreatingProject\obj\Debug\OfficeAutomation.Sample.CreatingProject.pdb
