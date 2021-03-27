@@ -1,0 +1,194 @@
+#IO Check,,
+IP,192.168.1.13,
+PORT,502,
+#Type,Name, ID
+,,
+Digital input, PM Zone#1 Zone#1 Cathode#1 DC Power On/Off signal       ,00
+Digital input, PM Zone#1 Zone#1 Cathode#1 DC Power Set-point signal	   ,01
+Digital input, PM Zone#1 Zone#1 Cathode#1 DC Power Fault signal        ,02
+Digital input, PM Zone#1 Zone#1 Cathode#1 DC Power ARC signal          ,03
+Digital input, PM Zone#1 Zone#1 Cathode#1 DC Power Limit signal        ,04
+Digital input, PM Zone#1 Zone#1 Cathode#1 DC Power Protection signal   ,05
+Digital input, Spare06               								   ,06
+Digital input, Spare07               								   ,07
+Digital input, PM Zone#1 Zone#1 Cathode#2 DC Power On/Off signal       ,08
+Digital input, PM Zone#1 Zone#1 Cathode#2 DC Power Set-point signal	   ,09
+Digital input, PM Zone#1 Zone#1 Cathode#2 DC Power Fault signal        ,10
+Digital input, PM Zone#1 Zone#1 Cathode#2 DC Power ARC signal          ,11
+Digital input, PM Zone#1 Zone#1 Cathode#2 DC Power Limit signal        ,12
+Digital input, PM Zone#1 Zone#1 Cathode#2 DC Power Protection signal   ,13
+Digital input, Spare14               								   ,14
+Digital input, Spare15                								   ,15
+Digital input, PM Zone#1 Zone#2 Cathode#1 DC Power On/Off signal       ,16
+Digital input, PM Zone#1 Zone#2 Cathode#1 DC Power Set-point signal	   ,17
+Digital input, PM Zone#1 Zone#2 Cathode#1 DC Power Fault signal        ,18
+Digital input, PM Zone#1 Zone#2 Cathode#1 DC Power ARC signal          ,19
+Digital input, PM Zone#1 Zone#2 Cathode#1 DC Power Limit signal        ,20
+Digital input, PM Zone#1 Zone#2 Cathode#1 DC Power Protection signal   ,21
+Digital input, Spare22               								   ,22
+Digital input, Spare23               								   ,23
+Digital input, PM Zone#1 Zone#2 Cathode#2 DC Power On/Off signal       ,24
+Digital input, PM Zone#1 Zone#2 Cathode#2 DC Power Set-point signal	   ,25
+Digital input, PM Zone#1 Zone#2 Cathode#2 DC Power Fault signal        ,26
+Digital input, PM Zone#1 Zone#2 Cathode#2 DC Power ARC signal          ,27
+Digital input, PM Zone#1 Zone#2 Cathode#2 DC Power Limit signal        ,28
+Digital input, PM Zone#1 Zone#2 Cathode#2 DC Power Protection signal   ,29
+Digital input, Spare30               								   ,30
+Digital input, Spare31                								   ,31
+Digital input, PM Zone#2 Zone#3 Cathode#1 DC Power On/Off signal       ,32
+Digital input, PM Zone#2 Zone#3 Cathode#1 DC Power Set-point signal	   ,33
+Digital input, PM Zone#2 Zone#3 Cathode#1 DC Power Fault signal        ,34
+Digital input, PM Zone#2 Zone#3 Cathode#1 DC Power ARC signal          ,35
+Digital input, PM Zone#2 Zone#3 Cathode#1 DC Power Limit signal        ,36
+Digital input, PM Zone#2 Zone#3 Cathode#1 DC Power Protection signal   ,37
+Digital input, Spare38               								   ,38
+Digital input, Spare39               								   ,39
+Digital input, PM Zone#1 Zone#3 Cathode#1 DC Power On/Off signal       ,40
+Digital input, PM Zone#1 Zone#3 Cathode#1 DC Power Set-point signal	   ,41
+Digital input, PM Zone#1 Zone#3 Cathode#1 DC Power Fault signal        ,42
+Digital input, PM Zone#1 Zone#3 Cathode#1 DC Power ARC signal          ,43
+Digital input, PM Zone#1 Zone#3 Cathode#1 DC Power Limit signal        ,44
+Digital input, PM Zone#1 Zone#3 Cathode#1 DC Power Protection signal   ,45
+Digital input, Spare46               								   ,46
+Digital input, Spare47                								   ,47
+Digital input, PM Zone#1 Zone#3 Cathode#2 DC Power On/Off signal       ,48
+Digital input, PM Zone#1 Zone#3 Cathode#2 DC Power Set-point signal	   ,49
+Digital input, PM Zone#1 Zone#3 Cathode#2 DC Power Fault signal        ,50
+Digital input, PM Zone#1 Zone#3 Cathode#2 DC Power ARC signal          ,51
+Digital input, PM Zone#1 Zone#3 Cathode#2 DC Power Limit signal        ,52
+Digital input, PM Zone#1 Zone#3 Cathode#2 DC Power Protection signal   ,53
+Digital input, Spare54               								   ,54
+Digital input, Spare55               								   ,55
+Digital input, PM Zone#1 Zone#3 Cathode#3 DC Power On/Off signal       ,56
+Digital input, PM Zone#1 Zone#3 Cathode#3 DC Power Set-point signal	   ,57
+Digital input, PM Zone#1 Zone#3 Cathode#3 DC Power Fault signal        ,58
+Digital input, PM Zone#1 Zone#3 Cathode#3 DC Power ARC signal          ,59
+Digital input, PM Zone#1 Zone#3 Cathode#3 DC Power Limit signal        ,60
+Digital input, PM Zone#1 Zone#3 Cathode#3 DC Power Protection signal   ,61
+Digital input, Spare62               								   ,62
+Digital input, Spare63                								   ,63
+Digital input, PM Zone#1 Zone#4 Cathode#1 DC Power On/Off signal       ,64
+Digital input, PM Zone#1 Zone#4 Cathode#1 DC Power Set-point signal	   ,65
+Digital input, PM Zone#1 Zone#4 Cathode#1 DC Power Fault signal        ,66
+Digital input, PM Zone#1 Zone#4 Cathode#1 DC Power ARC signal          ,67
+Digital input, PM Zone#1 Zone#4 Cathode#1 DC Power Limit signal        ,68
+Digital input, PM Zone#1 Zone#4 Cathode#1 DC Power Protection signal   ,69
+Digital input, Spare70               								   ,70
+Digital input, Spare71               								   ,71
+Digital input, PM Zone#1 Zone#4 Cathode#2 DC Power On/Off signal       ,72
+Digital input, PM Zone#1 Zone#4 Cathode#2 DC Power Set-point signal	   ,73
+Digital input, PM Zone#1 Zone#4 Cathode#2 DC Power Fault signal        ,74
+Digital input, PM Zone#1 Zone#4 Cathode#2 DC Power ARC signal          ,75
+Digital input, PM Zone#1 Zone#4 Cathode#2 DC Power Limit signal        ,76
+Digital input, PM Zone#1 Zone#4 Cathode#2 DC Power Protection signal   ,77
+Digital input, Spare78               								   ,78
+Digital input, Spare79                								   ,79
+,,
+,,
+#Type,Name, ID
+Digital output, PM Zone#1 Cathode#1 DC Power on/off				       ,00	
+Digital output, PM Zone#1 Cathode#1 DC Power Regulation mode_1         ,01
+Digital output, PM Zone#1 Cathode#1 DC Power Regulation mode_2         ,02
+Digital output, Spare03                                                ,03
+Digital output, PM Zone#1 Cathode#2 DC Power on/off                    ,04
+Digital output, PM Zone#1 Cathode#2 DC Power Regulation mode_1         ,05
+Digital output, PM Zone#1 Cathode#2 DC Power Regulation mode_2         ,06
+Digital output, Spare07                                                ,07
+Digital output, PM Zone#2 Cathode#1 DC Power on/off                    ,08
+Digital output, PM Zone#2 Cathode#1 DC Power Regulation mode_1         ,09
+Digital output, PM Zone#2 Cathode#1 DC Power Regulation mode_2         ,10
+Digital output, Spare11                                                ,11
+Digital output, PM Zone#2 Cathode#2 DC Power on/off                    ,12
+Digital output, PM Zone#2 Cathode#2 DC Power Regulation mode_1         ,13
+Digital output, PM Zone#2 Cathode#2 DC Power Regulation mode_2         ,14
+Digital output, Spare15                                                ,15
+Digital output, PM Zone#2 Cathode#3 DC Power on/off                    ,16
+Digital output, PM Zone#2 Cathode#3 DC Power Regulation mode_1         ,17
+Digital output, PM Zone#2 Cathode#3 DC Power Regulation mode_2         ,18
+Digital output, Spare19                                                ,19
+Digital output, PM Zone#3 Cathode#1 DC Power on/off                    ,20
+Digital output, PM Zone#3 Cathode#1 DC Power Regulation mode_1         ,21
+Digital output, PM Zone#3 Cathode#1 DC Power Regulation mode_2         ,22
+Digital output, Spare23                                                ,23
+Digital output, PM Zone#3 Cathode#2 DC Power on/off                    ,24
+Digital output, PM Zone#3 Cathode#2 DC Power Regulation mode_1         ,25
+Digital output, PM Zone#3 Cathode#2 DC Power Regulation mode_2         ,26
+Digital output, Spare27                                                ,27
+Digital output, PM Zone#3 Cathode#3 DC Power on/off                    ,28
+Digital output, PM Zone#3 Cathode#3 DC Power Regulation mode_1         ,29
+Digital output, PM Zone#3 Cathode#3 DC Power Regulation mode_2         ,30
+Digital output, Spare31                                                ,31
+Digital output, PM Zone#4 Cathode#1 DC Power on/off                    ,32
+Digital output, PM Zone#4 Cathode#1 DC Power Regulation mode_1         ,33
+Digital output, PM Zone#4 Cathode#1 DC Power Regulation mode_2         ,34
+Digital output, Spare35                                                ,35
+Digital output, PM Zone#4 Cathode#2 DC Power on/off                    ,36
+Digital output, PM Zone#4 Cathode#2 DC Power Regulation mode_1         ,37
+Digital output, PM Zone#4 Cathode#2 DC Power Regulation mode_2         ,38
+Digital output, Spare39                                                ,39
+Digital output, Spare40                                                ,40
+Digital output, Spare41                                                ,41
+Digital output, Spare42                                                ,42
+Digital output, Spare43                                                ,43
+Digital output, Spare44                                                ,44
+Digital output, Spare45                                                ,45
+Digital output, Spare46                                                ,46
+Digital output, Spare47                                                ,47
+,,
+,,
+#Type,Name, ID
+Analog Input, PM Zone#1 Cathode#1 DC Power Ref_out				,00
+Analog Input, PM Zone#1 Cathode#1 DC Power Vout                 ,01,DC10K_VOLTAGE
+Analog Input, PM Zone#1 Cathode#1 DC Power Pout                 ,02,DC10K_POWER
+Analog Input, PM Zone#1 Cathode#1 DC Power Iout                 ,03,DC10K_CURRENT
+Analog Input, PM Zone#1 Cathode#2 DC Power Ref_out              ,04
+Analog Input, PM Zone#1 Cathode#2 DC Power Vout                 ,05,DC10K_VOLTAGE
+Analog Input, PM Zone#1 Cathode#2 DC Power Pout                 ,06,DC10K_POWER
+Analog Input, PM Zone#1 Cathode#2 DC Power Iout                 ,07,DC10K_CURRENT
+Analog Input, PM Zone#2 Cathode#1 DC Power Ref_out              ,08
+Analog Input, PM Zone#2 Cathode#1 DC Power Vout                 ,09,DC20K_VOLTAGE
+Analog Input, PM Zone#2 Cathode#1 DC Power Pout                 ,10,DC20K_POWER
+Analog Input, PM Zone#2 Cathode#1 DC Power Iout                 ,11,DC20K_CURRENT
+Analog Input, PM Zone#2 Cathode#2 DC Power Ref_out              ,12
+Analog Input, PM Zone#2 Cathode#2 DC Power Vout                 ,13,DC20K_VOLTAGE
+Analog Input, PM Zone#2 Cathode#2 DC Power Pout                 ,14,DC20K_POWER
+Analog Input, PM Zone#2 Cathode#2 DC Power Iout                 ,15,DC20K_CURRENT
+Analog Input, PM Zone#2 Cathode#3 DC Power Ref_out              ,16
+Analog Input, PM Zone#2 Cathode#3 DC Power Vout                 ,17,DC20K_VOLTAGE
+Analog Input, PM Zone#2 Cathode#3 DC Power Pout                 ,18,DC20K_POWER
+Analog Input, PM Zone#2 Cathode#3 DC Power Iout                 ,19,DC20K_CURRENT
+Analog Input, PM ZONE#3 Cathode#1 DC Power Ref_out              ,20
+Analog Input, PM ZONE#3 Cathode#1 DC Power Vout                 ,21,DC20K_VOLTAGE
+Analog Input, PM ZONE#3 Cathode#1 DC Power Pout                 ,22,DC20K_POWER
+Analog Input, PM ZONE#3 Cathode#1 DC Power Iout                 ,23,DC20K_CURRENT
+Analog Input, PM ZONE#3 Cathode#2 DC Power Ref_out              ,24
+Analog Input, PM ZONE#3 Cathode#2 DC Power Vout                 ,25,DC20K_VOLTAGE
+Analog Input, PM ZONE#3 Cathode#2 DC Power Pout                 ,26,DC20K_POWER
+Analog Input, PM ZONE#3 Cathode#2 DC Power Iout                 ,27,DC20K_CURRENT
+Analog Input, PM ZONE#3 Cathode#3 DC Power Ref_out              ,28
+Analog Input, PM ZONE#3 Cathode#3 DC Power Vout                 ,29,DC20K_VOLTAGE
+Analog Input, PM ZONE#3 Cathode#3 DC Power Pout                 ,30,DC20K_POWER
+Analog Input, PM ZONE#3 Cathode#3 DC Power Iout                 ,31,DC20K_CURRENT
+Analog Input, PM ZONE#4 Cathode#1 DC Power Ref_out              ,32
+Analog Input, PM ZONE#4 Cathode#1 DC Power Vout                 ,33,DC10K_VOLTAGE
+Analog Input, PM ZONE#4 Cathode#1 DC Power Pout                 ,34,DC10K_POWER
+Analog Input, PM ZONE#4 Cathode#1 DC Power Iout                 ,35,DC10K_CURRENT
+Analog Input, PM ZONE#4 Cathode#2 DC Power Ref_out              ,36
+Analog Input, PM ZONE#4 Cathode#2 DC Power Vout                 ,37,DC10K_VOLTAGE
+Analog Input, PM ZONE#4 Cathode#2 DC Power Pout                 ,38,DC10K_POWER
+Analog Input, PM ZONE#4 Cathode#2 DC Power Iout                 ,39,DC10K_CURRENT
+,,
+,,
+#Type,Name, ID
+Analog Output, PM Zone#1 Cathode#1 DC Power Analog signal		,00,DCPOWER10K_S
+Analog Output, PM Zone#1 Cathode#2 DC Power Analog signal       ,01,DCPOWER10K_S
+Analog Output, PM Zone#2 Cathode#1 DC Power Analog signal       ,02,DCPOWER20K_S
+Analog Output, PM Zone#2 Cathode#2 DC Power Analog signal       ,03,DCPOWER20K_S
+Analog Output, PM Zone#2 Cathode#3 DC Power Analog signal       ,04,DCPOWER20K_S
+Analog Output, PM Zone#3 Cathode#1 DC Power Analog signal       ,05,DCPOWER20K_S
+Analog Output, PM Zone#3 Cathode#2 DC Power Analog signal       ,06,DCPOWER20K_S
+Analog Output, PM Zone#3 Cathode#3 DC Power Analog signal       ,07,DCPOWER20K_S
+Analog Output, PM Zone#4 Cathode#1 DC Power Analog signal       ,08,DCPOWER10K_S
+Analog Output, PM Zone#4 Cathode#2 DC Power Analog signal       ,09,DCPOWER10K_S
+Analog Output, Spare10                                          ,10
+Analog Output, Spare11                                          ,11

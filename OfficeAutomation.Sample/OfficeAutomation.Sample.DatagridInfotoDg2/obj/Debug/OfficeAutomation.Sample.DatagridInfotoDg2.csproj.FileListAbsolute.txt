@@ -1,0 +1,15 @@
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\obj\Debug\MainWindow.g.cs
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\obj\Debug\App.g.cs
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\obj\Debug\OfficeAutomation.Sample.DatagridInfotoDg2_MarkupCompile.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\obj\Debug\OfficeAutomation.Sample.DatagridInfotoDg2_MarkupCompile.lref
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\bin\Debug\OfficeAutomation.Sample.DatagridInfotoDg2.exe.config
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\bin\Debug\OfficeAutomation.Sample.DatagridInfotoDg2.exe
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\bin\Debug\OfficeAutomation.Sample.DatagridInfotoDg2.pdb
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\obj\Debug\MainWindow.baml
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\obj\Debug\OfficeAutomation.Sample.DatagridInfotoDg2.g.resources
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\obj\Debug\OfficeAutomation.Sample.DatagridInfotoDg2.Properties.Resources.resources
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\obj\Debug\OfficeAutomation.Sample.DatagridInfotoDg2.csproj.GenerateResource.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\obj\Debug\OfficeAutomation.Sample.DatagridInfotoDg2.csproj.CoreCompileInputs.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\obj\Debug\OfficeAutomation.Sample.DatagridInfotoDg2.exe
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\obj\Debug\OfficeAutomation.Sample.DatagridInfotoDg2.pdb
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.DatagridInfotoDg2\obj\Debug\OfficeAutomation.Sample.DatagridInfotoDg2.csprojAssemblyReference.cache

@@ -1,0 +1,16 @@
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\obj\Debug\OfficeAutomation.Sample.Arc.csprojAssemblyReference.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\obj\Debug\MainWindow.g.cs
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\obj\Debug\App.g.cs
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\obj\Debug\OfficeAutomation.Sample.Arc_MarkupCompile.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\obj\Debug\OfficeAutomation.Sample.Arc_MarkupCompile.lref
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\bin\Debug\OfficeAutomation.Sample.Arc.exe.config
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\bin\Debug\OfficeAutomation.Sample.Arc.exe
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\bin\Debug\OfficeAutomation.Sample.Arc.pdb
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\obj\Debug\MainWindow.baml
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\obj\Debug\OfficeAutomation.Sample.Arc.g.resources
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\obj\Debug\OfficeAutomation.Sample.Arc.Properties.Resources.resources
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\obj\Debug\OfficeAutomation.Sample.Arc.csproj.GenerateResource.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\obj\Debug\OfficeAutomation.Sample.Arc.csproj.CoreCompileInputs.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\obj\Debug\OfficeAutomation.Sample.Arc.exe
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\obj\Debug\OfficeAutomation.Sample.Arc.pdb
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.Arc\obj\Debug\GeneratedInternalTypeHelper.g.cs

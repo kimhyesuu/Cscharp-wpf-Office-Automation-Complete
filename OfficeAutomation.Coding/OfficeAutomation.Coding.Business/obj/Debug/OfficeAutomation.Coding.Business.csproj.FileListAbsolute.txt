@@ -1,0 +1,9 @@
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Business\bin\Debug\OfficeAutomation.Coding.Business.dll
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Business\bin\Debug\OfficeAutomation.Coding.Business.pdb
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Business\obj\Debug\OfficeAutomation.Coding.Business.csproj.CoreCompileInputs.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Business\obj\Debug\OfficeAutomation.Coding.Business.dll
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Business\obj\Debug\OfficeAutomation.Coding.Business.pdb
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Business\bin\Debug\OfficeAutomation.Coding.Core.dll
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Business\bin\Debug\OfficeAutomation.Coding.Core.pdb
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Business\obj\Debug\OfficeAutomation.Coding.Business.csprojAssemblyReference.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Business\obj\Debug\OfficeAutomation.Coding.Business.csproj.CopyComplete

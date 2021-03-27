@@ -1,0 +1,41 @@
+﻿<Window x:Class="OfficeAutomation.Sample.CsvFileOpen.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:OfficeAutomation.Sample.CsvFileOpen"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="1200" Width="800">
+    <Grid>
+		<Grid.RowDefinitions>
+			<RowDefinition Height="Auto"/>
+			<RowDefinition Height="Auto"/>
+
+			<RowDefinition Height="*"/>
+			<RowDefinition Height="*"/>
+
+		</Grid.RowDefinitions>
+
+		<Label x:Name="lbFilePath" Grid.Row="0" Height="120" FontSize="24"/>
+		<Button Grid.Row="1" Content="버튼" Height="120" Click="Button_Click"/>
+		<DataGrid x:Name="Datagrid1" Grid.Row="2"  CanUserAddRows="False" >
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="No" Width="0.3*" Binding="{Binding Path=SequentialNumber}"/>
+				<DataGridTextColumn Header="AccessModifier" Width="1.5*" Binding="{Binding Path=AccessModifier}" />
+				<DataGridTextColumn Header="classType" Width="1.5*" Binding="{Binding Path=classType}"/>
+				<DataGridTextColumn Header="ClassName" Width="1.5*" Binding="{Binding Path=ClassName}"/>
+			</DataGrid.Columns>
+		</DataGrid>
+
+		<DataGrid ItemsSource="{Binding Path=ClassDetailInfos}" Grid.Row="3"   CanUserAddRows="False" >
+			<DataGrid.Columns>
+				<DataGridTextColumn Header="No" Width="0.3*" Binding="{Binding Path=SequentialNumber}"/>
+				<DataGridTextColumn Header="LastName" Width="1.5*"/>
+				<DataGridTextColumn Header="ID" Width="1.5*"/>
+				<DataGridTextColumn Header="Email" Width="1.5*"/>
+			</DataGrid.Columns>
+		</DataGrid>
+
+
+	</Grid>
+</Window>
