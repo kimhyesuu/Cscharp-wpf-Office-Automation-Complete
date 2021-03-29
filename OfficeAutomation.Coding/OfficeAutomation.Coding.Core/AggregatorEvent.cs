@@ -2,7 +2,7 @@
 {
 	using Prism.Events;
 
-	public class SendCsvFileList : PubSubEvent<string[]>	{ }
+	public class SendCsvFileList : PubSubEvent<string[]>			{ }
 
-	public class SendUpdatedList : PubSubEvent<string>		{ }
+	public class SendConvertedMessage : PubSubEvent<string>		{ }
 }

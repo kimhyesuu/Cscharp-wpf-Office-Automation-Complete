@@ -1,8 +1,9 @@
-﻿using Prism.Mvvm;
+﻿using OfficeAutomation.Coding.Business.Services;
+using Prism.Mvvm;
 
 namespace OfficeAutomation.Coding.Business.Models
 {
-	public class ModelBase : BindableBase
+	public class ModelBase : BindableBase, ISequencedObject
 	{
 		private int		_sequenceNumber;
 		private string _accessModifier;

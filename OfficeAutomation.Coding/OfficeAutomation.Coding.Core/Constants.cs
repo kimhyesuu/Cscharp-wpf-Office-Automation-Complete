@@ -7,6 +7,8 @@
 		public const string AccessModifierDefault		= "private";
 		public const string DataTypeDefault				= "int";
 		public const string MemberTypeDefault			= "field";
+		public const string ClassTypeDefault			= "None";
+
 
 		public const char	  Comma						   = ',';
 	}

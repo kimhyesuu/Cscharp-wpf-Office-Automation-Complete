@@ -1,4 +1,5 @@
-﻿using OfficeAutomation.Coding.Business.Models;
+﻿using OfficeAutomation.Coding.Business.Managers;
+using OfficeAutomation.Coding.Business.Models;
 using OfficeAutomation.Coding.Business.Services;
 using OfficeAutomation.Coding.Core;
 using Prism.Commands;
@@ -36,9 +37,8 @@ namespace Modules.CsvFile.ViewModels
 			{
 				var ConvertedData = CSVToObjects(csvFileList);
 				_classDetailInfoService.AddRange(ConvertedData);
-
-				var classNames		= GetClassNames(ConvertedData);
-			} 
+				TimerManager.CheckReadedCsvFileTimer.Start();
+			}
 		}
 
 		private bool IsCompatablitity(IClassService<ClassDetailInfoModel> classDetailInfoService, string selectedFilepath)
@@ -92,19 +92,6 @@ namespace Modules.CsvFile.ViewModels
 					Comment			= data[2]
 				};
 			}));
-		}
-
-		private List<string>					  GetClassNames(List<ClassDetailInfoModel> ClassDetailInfos)
-		{
-			var classNames = ClassDetailInfos.Select(o => o.ClassName).Distinct();
-			var list = new List<string>();
-
-			foreach (var className in classNames)
-			{
-				list.Add(className);
-			}
-
-			return list;
 		}
 	}	
 }

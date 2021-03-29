@@ -53,62 +53,112 @@
 		<GroupBox Grid.Column="0" Grid.Row="0" Header="Excel" FontSize="16" Style="{StaticResource HsGroupBoxStyle}" >
 
 			<StackPanel>
-				<DataGrid Margin="5" ItemsSource="{Binding Path=ClassInfos}" BorderThickness="1.3" Height="200">
+				<DataGrid Margin="5" AutoGenerateColumns="False"  BorderThickness="1.3" Height="200"
+							 ItemsSource="{Binding Path=ClassInfos}" >
+					<DataGrid.Resources>
+						<Style TargetType="ComboBox" x:Key="AccessModifiersStyle">
+							<Setter Property="ItemsSource"
+							Value="{Binding RelativeSource={RelativeSource
+												   FindAncestor, 
+												   AncestorType={x:Type UserControl}},
+												   Path=DataContext.AccessModifiers}"/>
+						</Style>
+						<Style TargetType="ComboBox" x:Key="ClassTypesStyle">
+							<Setter Property="ItemsSource"
+							Value="{Binding RelativeSource={RelativeSource
+												   FindAncestor, 
+												   AncestorType={x:Type UserControl}},
+												   Path=DataContext.ClassTypes}"/>
+						</Style>
+					</DataGrid.Resources>
 					<DataGrid.Columns>
-						<DataGridTextColumn Binding="{Binding Path=SequenceNumber}" Header="No" Width="50"/>
-						<DataGridTextColumn Binding="{Binding Path=AccessModifier}" Header="Access Modifiers" Width="145" MaxWidth="130">
-							<DataGridTextColumn.ElementStyle>
-								<Style>
-									<Setter Property="TextBlock.TextWrapping" Value="Wrap" />
-									<Setter Property="TextBlock.TextAlignment" Value="Left"/>
-								</Style>
-							</DataGridTextColumn.ElementStyle>
-						</DataGridTextColumn>
-						<DataGridTextColumn Binding="{Binding Path=ClassName}" Header="Name" Width="80" MaxWidth="100">
-							<DataGridTextColumn.ElementStyle>
-								<Style>
-									<Setter Property="TextBlock.TextWrapping" Value="Wrap" />
-									<Setter Property="TextBlock.TextAlignment" Value="Center"/>
-								</Style>
-							</DataGridTextColumn.ElementStyle>
-						</DataGridTextColumn>
-						<DataGridTextColumn Binding="{Binding Path=ClassType}" Header="ClassType" Width="120"/>
+						<DataGridTextColumn Header="NO" Width="75"
+												  Binding="{Binding Path=SequenceNumber}"/>
+						
+						<DataGridComboBoxColumn Header="Access Modifier" Width="180"
+                                SelectedItemBinding="{Binding AccessModifier}"
+                                ElementStyle			="{StaticResource AccessModifiersStyle}"
+                                EditingElementStyle="{StaticResource AccessModifiersStyle}"/>
 
+						<DataGridComboBoxColumn Header="Class Type" Width="180"
+                                SelectedItemBinding="{Binding ClassType}"
+                                ElementStyle			="{StaticResource ClassTypesStyle}"
+                                EditingElementStyle="{StaticResource ClassTypesStyle}"/>
+
+						<DataGridTextColumn Header="Name" Width="120"
+												  Binding="{Binding Path=ClassName}"/>
+
+						<DataGridTemplateColumn Width="90" MaxWidth="90" >
+							<DataGridTemplateColumn.CellTemplate>
+								<DataTemplate>
+									<Button HorizontalAlignment="Center" Content="선택" FontWeight="DemiBold"
+											  Foreground="Black" Background="#FFF9F9F9" BorderBrush="{x:Null}" 
+											  Command="{Binding Path=DataContext.SendSelectedClassInfoCommand,       
+											  			  RelativeSource= {RelativeSource FindAncestor,
+											  			  AncestorType={x:Type DataGrid}}}" CommandParameter="{Binding}"/>
+								</DataTemplate>
+							</DataGridTemplateColumn.CellTemplate>
+						</DataGridTemplateColumn>
+						
 					</DataGrid.Columns>
 				</DataGrid>
 
-				<DataGrid ItemsSource="{Binding Path=ClassDetailInfos}"  Margin="5" BorderThickness="1.3" Height="600" >
-
+				<DataGrid Margin="5" AutoGenerateColumns="False" BorderThickness="1.3" Height="600" 
+							 ItemsSource="{Binding Path=ClassDetailInfos}">
+					<DataGrid.Resources>
+						<Style TargetType="ComboBox" x:Key="AccessModifiersStyle">
+							<Setter Property="ItemsSource"
+							Value="{Binding RelativeSource={RelativeSource
+												   FindAncestor, 
+												   AncestorType={x:Type UserControl}},
+												   Path=DataContext.AccessModifiers}"/>
+						</Style>
+						<Style TargetType="ComboBox" x:Key="MemberDataTypesStyle">
+							<Setter Property="ItemsSource"
+							Value="{Binding RelativeSource={RelativeSource
+												   FindAncestor, 
+												   AncestorType={x:Type UserControl}},
+												   Path=DataContext.MemberDataTypes}"/>
+						</Style>
+						<Style TargetType="ComboBox" x:Key="MemberTypesStyle">
+							<Setter Property="ItemsSource"
+							Value="{Binding RelativeSource={RelativeSource
+												   FindAncestor, 
+												   AncestorType={x:Type UserControl}},
+												   Path=DataContext.MemberTypes}"/>
+						</Style>
+					</DataGrid.Resources>
 					<DataGrid.Columns>
-						<DataGridTextColumn Binding="{Binding Path=SequenceNumber}" Header="No" Width="50"/>
+						<DataGridTextColumn Header="NO" Width="75"
+												  Binding="{Binding Path=SequenceNumber}"/>
 
-						<DataGridTextColumn Binding="{Binding Path=AccessModifier}" Header="Access Modifiers" Width="145" MaxWidth="130">
-							<DataGridTextColumn.ElementStyle>
-								<Style>
-									<Setter Property="TextBlock.TextWrapping" Value="Wrap" />
-									<Setter Property="TextBlock.TextAlignment" Value="Left"/>
-								</Style>
-							</DataGridTextColumn.ElementStyle>
-						</DataGridTextColumn>
-						<DataGridTextColumn Binding="{Binding Path=DataType}" Header="DataType" Width="80" MaxWidth="100">
-							<DataGridTextColumn.ElementStyle>
-								<Style>
-									<Setter Property="TextBlock.TextWrapping" Value="Wrap" />
-									<Setter Property="TextBlock.TextAlignment" Value="Center"/>
-								</Style>
-							</DataGridTextColumn.ElementStyle>
-						</DataGridTextColumn>
-						<DataGridTextColumn Binding="{Binding Path=MemberName}" Header="MemberName" Width="120"/>
-						<DataGridTextColumn Binding="{Binding Path=MemberType}" Header="Member type" Width="120"/>
-						<DataGridTextColumn Binding="{Binding Path=Comment}"	  Header="Comment" Width="120"/>
+						<DataGridComboBoxColumn Header="Access Modifier" Width="180"
+                                SelectedItemBinding="{Binding AccessModifier}"
+                                ElementStyle			="{StaticResource AccessModifiersStyle}"
+                                EditingElementStyle="{StaticResource AccessModifiersStyle}"/>
+
+						<DataGridComboBoxColumn Header="Member DataType" Width="180"
+                                SelectedItemBinding="{Binding MemberDataType}"
+                                ElementStyle			="{StaticResource MemberDataTypesStyle}"
+                                EditingElementStyle="{StaticResource MemberDataTypesStyle}"/>
+
+						<DataGridTextColumn Header="Name" Width="120"
+												  Binding="{Binding Path=MemberName}"/>
+
+						<DataGridComboBoxColumn Header="Class Type" Width="180"
+                                SelectedItemBinding="{Binding MemberType}"
+                                ElementStyle			="{StaticResource MemberTypesStyle}"
+                                EditingElementStyle="{StaticResource MemberTypesStyle}"/>
 					</DataGrid.Columns>
+
 				</DataGrid>
 			</StackPanel>
 		</GroupBox>
 
 		<!--	Col 0  Row 1 -->
 		<StackPanel Grid.Column="0" Grid.Row="1"  HorizontalAlignment="Right" VerticalAlignment="Center" >
-			<Button Width="120" Height="35" Margin="1,5" Content="Confirm" FontWeight="Bold" />
+			<Button Width="120" Height="35" Margin="1,5" Content="Confirm" FontWeight="Bold" 
+					  Command="{Binding Path=SendConvertedMessageCommand}"/>
 		</StackPanel>
 
 		<!--	Col 1  Row 0 -->
