@@ -1,0 +1,5 @@
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.BackgroundWorker\obj\Debug\OfficeAutomation.Sample.BackgroundWorkerExe.csprojAssemblyReference.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.BackgroundWorker\obj\Debug\MainWindow.g.cs
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.BackgroundWorker\obj\Debug\App.g.cs
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.BackgroundWorker\obj\Debug\OfficeAutomation.Sample.BackgroundWorkerExe_MarkupCompile.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.BackgroundWorker\obj\Debug\OfficeAutomation.Sample.BackgroundWorkerExe_MarkupCompile.lref

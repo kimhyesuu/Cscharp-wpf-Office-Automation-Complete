@@ -21,6 +21,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeAutomation.Sample.Csv
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeAutomation.Sample.DatagridInfotoDg2", "OfficeAutomation.Sample.DatagridInfotoDg2\OfficeAutomation.Sample.DatagridInfotoDg2.csproj", "{C4043870-A548-453A-9295-FD943A4B2C40}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeAutomation.Sample.BackgroundWorkerExe", "OfficeAutomation.Sample.BackgroundWorker\OfficeAutomation.Sample.BackgroundWorkerExe.csproj", "{AD94A95F-F968-41BF-A924-755F0251F71B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "OfficeAutomation.Sample.WorkerExe01", "OfficeAutomation.Sample.WorkerExe01\OfficeAutomation.Sample.WorkerExe01.csproj", "{7DC76BF6-53F0-48CF-90EA-7BB8285EDEE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +59,14 @@ Global
 		{C4043870-A548-453A-9295-FD943A4B2C40}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C4043870-A548-453A-9295-FD943A4B2C40}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C4043870-A548-453A-9295-FD943A4B2C40}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AD94A95F-F968-41BF-A924-755F0251F71B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AD94A95F-F968-41BF-A924-755F0251F71B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AD94A95F-F968-41BF-A924-755F0251F71B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AD94A95F-F968-41BF-A924-755F0251F71B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7DC76BF6-53F0-48CF-90EA-7BB8285EDEE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7DC76BF6-53F0-48CF-90EA-7BB8285EDEE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7DC76BF6-53F0-48CF-90EA-7BB8285EDEE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7DC76BF6-53F0-48CF-90EA-7BB8285EDEE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

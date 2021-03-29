@@ -1,0 +1,14 @@
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\bin\Debug\OfficeAutomation.Sample.WorkerExe01.exe.config
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\bin\Debug\OfficeAutomation.Sample.WorkerExe01.exe
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\bin\Debug\OfficeAutomation.Sample.WorkerExe01.pdb
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\obj\Debug\MainWindow.g.cs
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\obj\Debug\App.g.cs
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\obj\Debug\OfficeAutomation.Sample.WorkerExe01_MarkupCompile.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\obj\Debug\OfficeAutomation.Sample.WorkerExe01_MarkupCompile.lref
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\obj\Debug\MainWindow.baml
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\obj\Debug\OfficeAutomation.Sample.WorkerExe01.g.resources
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\obj\Debug\OfficeAutomation.Sample.WorkerExe01.Properties.Resources.resources
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\obj\Debug\OfficeAutomation.Sample.WorkerExe01.csproj.GenerateResource.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\obj\Debug\OfficeAutomation.Sample.WorkerExe01.csproj.CoreCompileInputs.cache
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\obj\Debug\OfficeAutomation.Sample.WorkerExe01.exe
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Sample\OfficeAutomation.Sample.WorkerExe01\obj\Debug\OfficeAutomation.Sample.WorkerExe01.pdb

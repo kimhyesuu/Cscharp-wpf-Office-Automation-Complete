@@ -17,10 +17,6 @@ namespace OfficeAutomation.Coding.ConvertExcelToCoding
 
 		protected override void RegisterTypes(IContainerRegistry containerRegistry)
 		{
-			//containerRegistry.RegisterDialog<CodingInfo, CodingInfoViewModel>();
-			//containerRegistry.RegisterDialog<ProductInfo, ProductInfoViewModel>();
-
-			//containerRegistry.RegisterDialogWindow<RegistryDialogWindow>();
 		}
 
 		protected override void ConfigureModuleCatalog(IModuleCatalog moduleCatalog)

@@ -4,16 +4,11 @@ namespace WpfApplication1.ViewModels
 {
     public class ViewModelLocator
     {
-        private MainWindowViewModel mainWindowViewModel = null;
-        public MainWindowViewModel MainWindowViewModel
-        {
-            get { return mainWindowViewModel; }
-            set { mainWindowViewModel = value; }
-        }
+		public MainWindowViewModel MainWindowViewModel { get; set; } = null;
 
-        public ViewModelLocator()
+		public ViewModelLocator()
         {
-            this.mainWindowViewModel =
+            this.MainWindowViewModel =
                IoC.Container.Instance.Kernel.Get<MainWindowViewModel>();
         }
     }

@@ -1,48 +1,113 @@
-﻿using OfficeAutomation.Coding.Core;
+﻿using OfficeAutomation.Coding.Business.Models;
+using OfficeAutomation.Coding.Business.Services;
+using OfficeAutomation.Coding.Core;
 using Prism.Commands;
 using Prism.Mvvm;
 using System;
-using System.IO;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Modules.CsvFile.ViewModels
 {
 	public class ImportViewModel : BindableBase
 	{
-		public DelegateCommand OpenFileDialogCommand { get; private set; }
+		private readonly IClassService<ClassDetailInfoModel> _classDetailInfoService;
+
+		public  DelegateCommand OpenFileDialogCommand { get; private set; }
 
 		public ImportViewModel()
 		{
-			OpenFileDialogCommand = new DelegateCommand(OpenCsvFile);
+			OpenFileDialogCommand   = new DelegateCommand(OpenCsvFile);
+			_classDetailInfoService = new ClassDetailInfoService();
 		}
 
 		private void OpenCsvFile()
 		{
-			var openFileDlg = new Microsoft.Win32.OpenFileDialog();
+			var			  selectedFilepath = string.Empty;
+			var			  openFileDlg		 = new Microsoft.Win32.OpenFileDialog();
+			CsvFileDialog CsvFileDlg		 = new CsvFileDialog(openFileDlg);
 
-			openFileDlg.InitialDirectory = GetCsvPath();
-			openFileDlg.Filter = Constants.CsvAndAllFileFilter;
+			CsvFileDlg.Initialize();
+			selectedFilepath		= CsvFileDlg.GetDialogFilePath();
 
-			var result = openFileDlg.ShowDialog();
+			if (IsCompatablitity(_classDetailInfoService, selectedFilepath) is false) return;
 
-			if (result.HasValue is true && result.Value is true)
+			var csvFileList		= CsvFileDlg.ReadCSV(selectedFilepath);
+			if (csvFileList != null)
 			{
-				var selectedFilepath = openFileDlg.FileName;
-				// Detail 먼저 받고 
-				// Class Info만드자 
-				//ClassDetailInfoRepository = new List<ClassDetailInfo>(ReadCSV(selectedFilepath));
-			}
+				var ConvertedData = CSVToObjects(csvFileList);
+				_classDetailInfoService.AddRange(ConvertedData);
+
+				var classNames = GetClassNames(ConvertedData);
+				//var viewModel = MovingView.GetCurrentView;
+				//viewModel.SendClassNames(classNames);
+			} 
 		}
 
-		private string GetCsvPath()
+		private bool IsCompatablitity(IClassService<ClassDetailInfoModel> classDetailInfoService, string selectedFilepath)
 		{
-			string path = string.Empty;
+			if (selectedFilepath == string.Empty)
+			{
+				return false;
+			}
 
-			string workingDirectory = Environment.CurrentDirectory;
-			path = Directory.GetParent(workingDirectory).Parent.Parent.Parent.FullName + Constants.CsvFolder;
+			if (classDetailInfoService.GetCount() > 0)
+			{
+				if (IsOPenNewFileWithoutSaving() is true)
+				{
+					_classDetailInfoService.Clear();
+					return true;
+				}
+				else
+				{
+					return false;
+				}
+			}
 
-			return path;
+			return true;
 		}
-	}
 
-	
+		private bool IsOPenNewFileWithoutSaving()
+		{
+			var result = Message.InfoMessage("저장안하시고 새로운 파일을 열 것입니까?");
+
+			if (result == System.Windows.MessageBoxResult.OK)
+			{
+				return true;
+			}
+
+			return false;
+		}
+
+		private List<ClassDetailInfoModel> CSVToObjects(string[] lines)
+		{
+			return new List<ClassDetailInfoModel>(lines.Select(line =>
+			{
+				string[] data = line.Split(Constants.Comma);
+
+				return new ClassDetailInfoModel()
+				{
+					AccessModifier = Constants.AccessModifierDefault,
+					ClassName		= data[0]						      ,
+					DataType		   = Constants.DataTypeDefault      ,
+					MemberName		= data[1]						      ,
+					MemberType		= Constants.MemberTypeDefault    ,
+					Comment			= data[2]
+				};
+			}));
+		}
+
+		private List<string> GetClassNames(List<ClassDetailInfoModel> ClassDetailInfos)
+		{
+			var classNames = ClassDetailInfos.Select(o => o.ClassName).Distinct();
+			var list = new List<string>();
+
+			foreach (var className in classNames)
+			{
+				list.Add(className);
+			}
+
+			return list;
+		}
+	}	
 }
