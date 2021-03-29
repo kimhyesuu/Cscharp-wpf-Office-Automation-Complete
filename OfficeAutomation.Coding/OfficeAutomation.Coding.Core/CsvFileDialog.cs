@@ -1,16 +1,12 @@
 ﻿using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace OfficeAutomation.Coding.Core
 {
 	public class CsvFileDialog 
 	{
-		public static string CsvPath			 { get; set; }
+		public static string  CsvPath			 { get; set; }
 		public OpenFileDialog OpenFileDialog { get; set; }
 
 		public CsvFileDialog(OpenFileDialog openFileDialog)
@@ -21,13 +17,13 @@ namespace OfficeAutomation.Coding.Core
 		public void Initialize()
 		{
 			OpenFileDialog.InitialDirectory = GetCsvPath();
-			CsvPath = OpenFileDialog.InitialDirectory.ToString();
-			OpenFileDialog.Filter = Constants.CsvAndAllFileFilter;
+			CsvPath								  = OpenFileDialog.InitialDirectory.ToString();
+			OpenFileDialog.Filter			  = Constants.CsvAndAllFileFilter;
 		}
 
 		public string GetDialogFilePath()
 		{
-			var result = OpenFileDialog.ShowDialog();
+			var result			   = OpenFileDialog.ShowDialog();
 			var selectedFilepath = string.Empty;
 
 			if (result.HasValue is true && result.Value is true)
@@ -48,6 +44,7 @@ namespace OfficeAutomation.Coding.Core
 				list = File.ReadAllLines(System.IO.Path.ChangeExtension(fileName, ".csv"));
 				return list;
 			}
+
 			return list;
 		}
 

@@ -3,7 +3,6 @@ using OfficeAutomation.Coding.Business.Services;
 using OfficeAutomation.Coding.Core;
 using Prism.Commands;
 using Prism.Mvvm;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -38,9 +37,7 @@ namespace Modules.CsvFile.ViewModels
 				var ConvertedData = CSVToObjects(csvFileList);
 				_classDetailInfoService.AddRange(ConvertedData);
 
-				var classNames = GetClassNames(ConvertedData);
-				//var viewModel = MovingView.GetCurrentView;
-				//viewModel.SendClassNames(classNames);
+				var classNames		= GetClassNames(ConvertedData);
 			} 
 		}
 
@@ -69,7 +66,7 @@ namespace Modules.CsvFile.ViewModels
 
 		private bool IsOPenNewFileWithoutSaving()
 		{
-			var result = Message.InfoMessage("저장안하시고 새로운 파일을 열 것입니까?");
+			var result = Message.InfoMessage("변환 데이터를 저장안하십니까?");
 
 			if (result == System.Windows.MessageBoxResult.OK)
 			{
@@ -97,7 +94,7 @@ namespace Modules.CsvFile.ViewModels
 			}));
 		}
 
-		private List<string> GetClassNames(List<ClassDetailInfoModel> ClassDetailInfos)
+		private List<string>					  GetClassNames(List<ClassDetailInfoModel> ClassDetailInfos)
 		{
 			var classNames = ClassDetailInfos.Select(o => o.ClassName).Distinct();
 			var list = new List<string>();

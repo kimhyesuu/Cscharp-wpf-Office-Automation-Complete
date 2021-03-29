@@ -4,8 +4,29 @@ namespace OfficeAutomation.Coding.Business.Models
 {
 	public class ModelBase : BindableBase
 	{
-		public int	  SequenceNumber { get; set; }
-		public string AccessModifier { get; set; }
-		public string ClassName		  { get; set; }
+		private int		_sequenceNumber;
+		private string _accessModifier;
+		private string _className;
+
+		public int SequenceNumber
+		{
+			get { return _sequenceNumber; }
+			set { SetProperty(ref _sequenceNumber, value); }
+		}
+
+		public string AccessModifier
+		{
+			get { return _accessModifier; }
+			set { SetProperty(ref _accessModifier, value); }
+		}
+
+		public string ClassName
+		{
+			get { return _className; }
+			set { SetProperty(ref _className, value); }
+		}
+
+		public ModelBase() { }
+	
 	}
 }

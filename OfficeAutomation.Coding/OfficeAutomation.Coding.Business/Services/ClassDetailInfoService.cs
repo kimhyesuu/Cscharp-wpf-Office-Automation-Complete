@@ -16,7 +16,6 @@ namespace OfficeAutomation.Coding.Business.Services
 
 		public IEnumerable<ClassDetailInfoModel> GetAll()
 		{
-
 			return _repository.GetAll();
 		}
 

@@ -2,12 +2,8 @@
 using OfficeAutomation.Coding.Business.Services;
 using Prism.Events;
 using Prism.Mvvm;
-using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Modules.CsvFile.ViewModels
 {
@@ -28,11 +24,8 @@ namespace Modules.CsvFile.ViewModels
 		}	
 
 		private readonly IClassService<ClassDetailInfoModel> _classDetailInfoService;
-		private readonly IClassService<ClassInfoModel> _classInfoService;
-		//public static	  System.Windows.Threading.DispatcherTimer CheckReadedCsvFileTimer { get; set; }
-		private			  IEventAggregator				  _eventAggregator;
-
-		public CsvFileInfoViewModel() { }
+		private readonly IClassService<ClassInfoModel>		  _classInfoService;
+		private			  IEventAggregator						  _eventAggregator;
 
 		public CsvFileInfoViewModel(IEventAggregator eventAggregator)
 		{
@@ -41,13 +34,7 @@ namespace Modules.CsvFile.ViewModels
 			_classInfoService			= new ClassInfoService();
 			_classDetailInfos		   = new ObservableCollection<ClassDetailInfoModel>();
 			_classInfos					= new ObservableCollection<ClassInfoModel>();
-			// 여기서 갖고 오자 
-
-			// 다시 열 때 문제가 있다. TimerManager를 만들자 
-			//CheckReadedCsvFileTimer = new System.Windows.Threading.DispatcherTimer();
-			//CheckReadedCsvFileTimer.Tick += CheckReadedCsvFileTimerTick;
-			//CheckReadedCsvFileTimer.Interval = new TimeSpan(0, 0, 0, 0, 500);
-			//CheckReadedCsvFileTimer.Start();
+			//로딩할 떄 콤보박스 내용을 넣어야한다.
 		}
 
 		//private void CheckReadedCsvFileTimerTick(object sender, EventArgs e)
@@ -73,9 +60,8 @@ namespace Modules.CsvFile.ViewModels
 		//	CsvFileInfo.AddClassInfo(classNames);
 		//}
 
-		public void SendClassNames(List<string> classNames)
+		public void ReceivedClassNames(List<string> classNames)
 		{
-			// _classInfos
 			foreach (var className in classNames)
 			{
 				_classInfos.Add(new ClassInfoModel
@@ -84,18 +70,5 @@ namespace Modules.CsvFile.ViewModels
 				});
 			}
 		}
-
-		//private List<string> GetClassNames(IEnumerable<ClassDetailInfoModel> ClassDetailInfos)
-		//{
-		//	var classNames = ClassDetailInfos.Select(o => o.ClassName).Distinct();
-		//	var list = new List<string>();
-
-		//	foreach (var className in classNames)
-		//	{
-		//		list.Add(className);
-		//	}
-
-		//	return list;
-		//}
 	}
 }

@@ -8,6 +8,16 @@ namespace OfficeAutomation.Coding.Business.Models
 {
 	public class ClassInfoModel : ModelBase
 	{
-		public string ClassType { get; set; }
+		private string _classType;
+
+		public string ClassType
+		{
+			get { return _classType; }
+			set { SetProperty(ref _classType, value); }
+		}
+
+		public ClassInfoModel() { }
+
+		//public string ClassType { get; set; }
 	}
 }
