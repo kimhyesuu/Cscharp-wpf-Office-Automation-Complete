@@ -90,6 +90,7 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Convert\ConvertTo.cs" />
     <Compile Include="CsvFileModule.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
@@ -105,12 +106,8 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <Compile Include="ViewModels\CsvFileInfoViewModel.cs" />
-    <Compile Include="ViewModels\ImportViewModel.cs" />
     <Compile Include="Views\CsvFileInfo.xaml.cs">
       <DependentUpon>CsvFileInfo.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Views\Import.xaml.cs">
-      <DependentUpon>Import.xaml</DependentUpon>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
@@ -134,10 +131,6 @@
   </ItemGroup>
   <ItemGroup>
     <Page Include="Views\CsvFileInfo.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\Import.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

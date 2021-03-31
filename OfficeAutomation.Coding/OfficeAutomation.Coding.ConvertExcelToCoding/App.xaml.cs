@@ -1,5 +1,7 @@
 ﻿using Modules.Coding;
 using Modules.CsvFile;
+using Modules.Log;
+using Modules.Setting;
 using OfficeAutomation.Coding.ConvertExcelToCoding.Views;
 using Prism.Ioc;
 using Prism.Modularity;
@@ -24,6 +26,8 @@ namespace OfficeAutomation.Coding.ConvertExcelToCoding
 			base.ConfigureModuleCatalog(moduleCatalog);
 			moduleCatalog.AddModule<CodingModule>();
 			moduleCatalog.AddModule<CsvFileModule>();
+			moduleCatalog.AddModule<SettingModule>();
+			moduleCatalog.AddModule<LogModule>();
 		}
 	}
 }

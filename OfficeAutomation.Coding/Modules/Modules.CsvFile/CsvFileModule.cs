@@ -18,7 +18,6 @@ namespace Modules.CsvFile
 		public void OnInitialized(IContainerProvider containerProvider)
 		{
 			_regionManager.RegisterViewWithRegion(RegionNames.WriteContentRegion, typeof(CsvFileInfo));
-			_regionManager.RegisterViewWithRegion(RegionNames.SettingRegion,		 typeof(Import)	  );
 		}
 
 		public void RegisterTypes(IContainerRegistry containerRegistry)

@@ -1,7 +1,0 @@
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Core\bin\Debug\OfficeAutomation.Coding.Core.dll
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Core\bin\Debug\OfficeAutomation.Coding.Core.pdb
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Core\obj\Debug\OfficeAutomation.Coding.Core.Properties.Resources.resources
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Core\obj\Debug\OfficeAutomation.Coding.Core.csproj.GenerateResource.cache
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Core\obj\Debug\OfficeAutomation.Coding.Core.csproj.CoreCompileInputs.cache
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Core\obj\Debug\OfficeAutomation.Coding.Core.dll
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.Core\obj\Debug\OfficeAutomation.Coding.Core.pdb

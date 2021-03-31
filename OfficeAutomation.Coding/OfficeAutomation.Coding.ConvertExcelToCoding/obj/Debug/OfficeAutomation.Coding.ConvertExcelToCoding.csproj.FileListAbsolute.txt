@@ -6,6 +6,8 @@ C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeA
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\MaterialDesignThemes.Wpf.dll
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\Modules.Coding.dll
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\Modules.CsvFile.dll
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\Modules.Log.dll
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\Modules.Setting.dll
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\OfficeAutomation.Coding.Core.dll
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\Prism.dll
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\Prism.Unity.Wpf.dll
@@ -20,6 +22,8 @@ C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeA
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\OfficeAutomation.Coding.Repository.dll
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\Modules.Coding.pdb
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\Modules.CsvFile.pdb
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\Modules.Log.pdb
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\Modules.Setting.pdb
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\MaterialDesignColors.pdb
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\MaterialDesignThemes.Wpf.pdb
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.ConvertExcelToCoding\bin\Debug\MaterialDesignThemes.Wpf.xml

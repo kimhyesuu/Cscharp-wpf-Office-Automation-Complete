@@ -23,9 +23,7 @@ C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeA
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\Modules\Modules.CsvFile\bin\Debug\OfficeAutomation.Coding.Repository.pdb
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\Modules\Modules.CsvFile\obj\Debug\Modules.CsvFile.csprojAssemblyReference.cache
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\Modules\Modules.CsvFile\obj\Debug\Views\CsvFileInfo.baml
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\Modules\Modules.CsvFile\obj\Debug\Views\Import.baml
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\Modules\Modules.CsvFile\obj\Debug\Views\CsvFileInfo.g.cs
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\Modules\Modules.CsvFile\obj\Debug\Views\Import.g.cs
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\Modules\Modules.CsvFile\obj\Debug\Modules.CsvFile_MarkupCompile.cache
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\Modules\Modules.CsvFile\obj\Debug\Modules.CsvFile.g.resources
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\Modules\Modules.CsvFile\obj\Debug\Modules.CsvFile.Properties.Resources.resources
