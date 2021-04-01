@@ -43,6 +43,7 @@ namespace Modules.CsvFile.ViewModels
 
 		private string												 SelectedClassName				{ get;			set; }  // CreateClassDetailInfos : Receive, SendCodingText : Using
 
+		public  ObservableCollection<string>				 ClassAccessModifiers         { get;				  }
 		public  ObservableCollection<string>			    AccessModifiers					{ get;		  	     }
 		public  ObservableCollection<string>			    MemberDataTypes				   { get;		  	     } 
 		public  ObservableCollection<string>			    MemberTypes					   { get;		  		  } 
@@ -63,6 +64,7 @@ namespace Modules.CsvFile.ViewModels
 			_classInfoService					= new ClassInfoService();
 			_settingTypeService				= new SettingTypeService();
 
+			ClassAccessModifiers				= new ObservableCollection<string>();
 			AccessModifiers					= new ObservableCollection<string>();
 			MemberDataTypes				   = new ObservableCollection<string>();
 			MemberTypes						   = new ObservableCollection<string>();
@@ -71,7 +73,7 @@ namespace Modules.CsvFile.ViewModels
 			Initialize();
 		}
 
-		private void CheckReadedFileTimerTick(object sender, EventArgs e)
+		private void   CheckReadedFileTimerTick(object sender, EventArgs e)
 		{
 			lock(_lockObject)
 			{
@@ -85,7 +87,7 @@ namespace Modules.CsvFile.ViewModels
 						_classInfos.Add(new ClassInfoModel
 						{
 							SequenceNumber = 0,
-							AccessModifier = Constants.AccessModifierDefault,
+							AccessModifier = "public"			,
 							ClassType		= Constants.ClassTypeDefault,
 							ClassName	   = ReceivedClassName
 						});
@@ -94,11 +96,19 @@ namespace Modules.CsvFile.ViewModels
 				}
 			}		
 		}
-
-		private void CreateClassDetailInfos(object classInfo)
+						   
+		private void   CreateClassDetailInfos(object classInfo)
 		{
 			var Receivedinfo = classInfo as ClassInfoModel;
-			if (Receivedinfo is null)		  return;
+
+			var emptyOrError = IsCreatingCompability(Receivedinfo);
+			if (emptyOrError != string.Empty)
+			{
+				SendErrorLogging(emptyOrError);
+				return;
+			}
+
+			SendErrorLogging(emptyOrError);
 
 			var className					  = Receivedinfo.ClassName;
 			SelectedClassName = className;
@@ -111,8 +121,8 @@ namespace Modules.CsvFile.ViewModels
 				_classDetailInfos.Add(classDetailInfo);
 			}
 		}
-
-		private void SendPriviewText()
+						   
+		private void   SendPriviewText()
 		{
 			var textResult          = string.Empty;
 			var errorLogs           = new List<string>();
@@ -122,13 +132,21 @@ namespace Modules.CsvFile.ViewModels
 
 			if (selectedClassInfo is null || DetailedInfosToThis.Count() == 0) return;
 
-			convertingData.Initialize(selectedClassInfo, DetailedInfosToThis);
+			var emptyOrError = convertingData.Initialize(selectedClassInfo, DetailedInfosToThis);
+			if (emptyOrError != string.Empty)
+			{
+				SendErrorLogging(emptyOrError);
+				return;
+			}
+			SendErrorLogging(emptyOrError);
+
 			convertingData.StartText();
 
-			errorLogs.Add(convertingData.FieldsText());
-			errorLogs.Add(convertingData.PropertiesText());
+			errorLogs.Add(convertingData.ConstantsText()  );
+			errorLogs.Add(convertingData.FieldsText()	    );
+			errorLogs.Add(convertingData.PropertiesText() );
 			errorLogs.Add(convertingData.ConstructorText());
-			errorLogs.Add(convertingData.MethodsText());
+			errorLogs.Add(convertingData.MethodsText()    );
 
 			convertingData.EndText();
 
@@ -137,16 +155,15 @@ namespace Modules.CsvFile.ViewModels
 				textResult = convertingData.Result();
 				_eventAggregator.GetEvent<SendConvertedMessage>().Publish(textResult);	
 			}
-
 			convertingData.Reset();
 		}
-
-		private void SendResults()
+						   
+		private void   SendResults()
 		{
 			throw new NotImplementedException();
 		}
-
-		private void AddDatatype()
+						   
+		private void   AddDatatype()
 		{		
 			if (string.IsNullOrWhiteSpace(_newDataType) ||
 				 ClassDetailInfos.Count == 0)
@@ -163,13 +180,13 @@ namespace Modules.CsvFile.ViewModels
 			MemberDataTypes.Add(NewDataType);
 			_newDataType = string.Empty;
 		}
-
-		private void SendErrorLogging(string errorLog)
+						   
+		private void   SendErrorLogging(string errorLog)
 		{
 			_eventAggregator.GetEvent<SendLog>().Publish(errorLog);
 		}
 
-		private bool IsCompability(List<string> errorLogs)
+		private bool   IsCompability(List<string> errorLogs)
 		{
 			foreach (var errorLog in errorLogs)
 			{
@@ -182,15 +199,27 @@ namespace Modules.CsvFile.ViewModels
 			return true;
 		}
 
-		private bool IsSpecialText(string txt)
+		private string IsCreatingCompability(ClassInfoModel receivedinfo)
+		{
+			if (receivedinfo is null) return "클래스 데이터가 없습니다.";
+
+			var result = string.Compare(receivedinfo.AccessModifier, "public"  , true) == 0 ||
+							 string.Compare(receivedinfo.AccessModifier, "internal", true) == 0 ? true : false;
+
+			if(result is false) return $"AccessModifier {receivedinfo.AccessModifier}(이)가 올바르지 않습니다.";
+
+			return string.Empty;
+		}
+
+		private bool   IsSpecialText(string txt)
 		{
 			// string str = @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";		
 			string str = @"[~!@\#$%^&*\()\=+|\\/:;?""']";
 			var	 rex = new System.Text.RegularExpressions.Regex(str);
 			return rex.IsMatch(txt);
 		}
-
-		private void Initialize()
+						   
+		private void   Initialize()
 		{
 			InitializeCommand();
 
@@ -198,44 +227,55 @@ namespace Modules.CsvFile.ViewModels
 
 			InitializeTimer();
 		}
-
+						   
 		#region 종류에 맞는 Initialize로 구성
-
-		private void InitializeData()
+						   
+		private void   InitializeData()
 		{
-			foreach (var AccessModifier in _settingTypeService.GetAccessModifiers())
+			var accessModifiers = _settingTypeService.GetAccessModifiers();
+			var memberDataTypes = _settingTypeService.GetDataTypes();
+			var memberTypes     = _settingTypeService.GetMemberTypes();
+			var classTypes      = _settingTypeService.GetClassTypes();
+
+			foreach (var accessModifier in accessModifiers)
 			{
-				AccessModifiers.Add(AccessModifier);
+				AccessModifiers.Add(accessModifier);
 			}
 
-			foreach (var MemberDataType in _settingTypeService.GetDataTypes())
+			foreach (var accessModifier in accessModifiers)
 			{
-				MemberDataTypes.Add(MemberDataType);
+				if(string.Compare(accessModifier, "internal", true) == 0 || string.Compare(accessModifier, "public", true) == 0)
+					ClassAccessModifiers.Add(accessModifier);
 			}
 
-			foreach (var MemberType in _settingTypeService.GetMemberTypes())
+			foreach (var memberDataType in memberDataTypes)
 			{
-				MemberTypes.Add(MemberType);
+				MemberDataTypes.Add(memberDataType);
 			}
 
-			foreach (var ClassType in _settingTypeService.GetClassTypes())
+			foreach (var memberType		 in memberTypes)
 			{
-				ClassTypes.Add(ClassType);
+				MemberTypes.Add(memberType);
+			}
+
+			foreach (var classType		 in classTypes)
+			{
+				ClassTypes.Add(classType);
 			}
 
 			_classInfos			= new ObservableCollection<ClassInfoModel>();
 			_classDetailInfos = new ObservableCollection<ClassDetailInfoModel>();
 		}
-
-		private void InitializeCommand()
+						   
+		private void   InitializeCommand()
 		{
 			CreateCommand						= new DelegateCommand<object>(CreateClassDetailInfos);
 			SendPriviewTextCommand			= new DelegateCommand(SendPriviewText);
 			AddDataTypeCommand				= new DelegateCommand(AddDatatype);
 			ConfirmCommand						= new DelegateCommand(SendResults);
 		}
-
-		private void InitializeTimer()
+						   
+		private void   InitializeTimer()
 		{
 			checkReadedFileTimer			   = TimerManager.CheckReadedCsvFileTimer;
 			checkReadedFileTimer.Tick     += CheckReadedFileTimerTick;

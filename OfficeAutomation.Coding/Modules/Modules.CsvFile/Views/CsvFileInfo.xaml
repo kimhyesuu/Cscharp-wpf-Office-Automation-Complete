@@ -60,7 +60,7 @@
 							Value="{Binding RelativeSource={RelativeSource
 												 FindAncestor, 
 												 AncestorType={x:Type UserControl}},
-												 Path=DataContext.AccessModifiers}"/>
+												 Path=DataContext.ClassAccessModifiers}"/>
 							</Style>
 							<Style TargetType="ComboBox" x:Key="ClassTypesStyle">
 								<Setter Property="ItemsSource"

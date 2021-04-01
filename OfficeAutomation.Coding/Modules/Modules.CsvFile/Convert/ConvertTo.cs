@@ -1,9 +1,9 @@
 ﻿using OfficeAutomation.Coding.Business.Models;
 using OfficeAutomation.Coding.Core;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace Modules.CsvFile.Convert
 {
@@ -11,9 +11,9 @@ namespace Modules.CsvFile.Convert
 	{
 		private const int spaceCount = 6;
 
-		private ClassInfoModel					 ClassInfo					{ get; set; }
-		private List<ClassDetailInfoModel>   ClassDetailInfos		   { get; set; }
-		private StringBuilder			       CodingTextResult			{ get; set; }
+		private ClassInfoModel ClassInfo							 { get; set; }
+		private List<ClassDetailInfoModel> ClassDetailInfos { get;      }
+		private StringBuilder CodingTextResult					 { get;      }
 
 		public ConvertTo()
 		{
@@ -21,14 +21,20 @@ namespace Modules.CsvFile.Convert
 			CodingTextResult = new StringBuilder();
 		}
 
-		public void   Initialize(ClassInfoModel classInfo, IEnumerable<ClassDetailInfoModel> classDetailInfos)
+		public string Initialize(ClassInfoModel classInfo, IEnumerable<ClassDetailInfoModel> classDetailInfos)
 		{
+			var result = IsCompability(classDetailInfos);
+			if (result != string.Empty)
+			{
+				return result;
+			}
+
 			ClassInfo = new ClassInfoModel()
 			{
 				SequenceNumber = classInfo.SequenceNumber,
-				AccessModifier = classInfo.AccessModifier,
-				ClassType = classInfo.ClassType,
-				ClassName = classInfo.ClassName
+				AccessModifier = classInfo.AccessModifier.Trim(),
+				ClassType      = classInfo.ClassType.Trim(),
+				ClassName      = ToCodingStyle(classInfo.ClassName)
 			};
 
 			foreach (var classDetailInfo in classDetailInfos)
@@ -36,14 +42,15 @@ namespace Modules.CsvFile.Convert
 				ClassDetailInfos.Add(new ClassDetailInfoModel()
 				{
 					SequenceNumber = classDetailInfo.SequenceNumber,
-					AccessModifier = classDetailInfo.AccessModifier,
-					MemberName	   = classDetailInfo.MemberName	  ,
-					MemberType	   = classDetailInfo.MemberType    ,
-					DataType       = classDetailInfo.DataType      ,
-					Comment        = classDetailInfo.Comment       ,
+					AccessModifier = classDetailInfo.AccessModifier.Trim(),
+					MemberName = ToCodingStyle(classDetailInfo.MemberName),
+					MemberType = classDetailInfo.MemberType.Trim(),
+					DataType = classDetailInfo.DataType.Trim(),
+					Comment = classDetailInfo.Comment is null ? string.Empty : classDetailInfo.Comment.Trim()
 				});
-
 			}
+
+			return string.Empty;
 		}
 
 		public void   Reset()
@@ -59,24 +66,28 @@ namespace Modules.CsvFile.Convert
 			return CodingTextResult.ToString();
 		}
 
-		public void	  StartText()
+		public void   StartText()
 		{
 			var text = string.Empty;
 
+			if (string.Compare(ClassInfo.AccessModifier, "public", true) == 0)
+			{
+				CodingTextResult.Append("\t" + $"{ClassInfo.AccessModifier} " );
+			}
+
 			if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeDefault, true) == 0)
 			{
-				text = "\t" + $"{ClassInfo.AccessModifier} class {ClassInfo.ClassName}";
+				text = "class {ClassInfo.ClassName}";
 			}
 			else
 			{
 				text = "\t" + $"{ClassInfo.AccessModifier} {ClassInfo.ClassType} {ClassInfo.ClassName}";
 			}
 
-			CodingTextResult.AppendLine(text);
 			CodingTextResult.AppendLine("\t{");
 		}
-
-		public void	  EndText()
+						  
+		public void   EndText()
 		{
 			var text = "\t}";
 			CodingTextResult.AppendLine(text);
@@ -104,24 +115,24 @@ namespace Modules.CsvFile.Convert
 			var errorResult = string.Empty;
 			var fields = ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.Field, true) == 0);
 
-			if(IsExist(fields) is false) return string.Empty;
+			if (IsExist(fields) is false) return string.Empty;
 
 			foreach (var classDetailInfo in fields)
 			{
 				// void 검사
-				if (string.Compare(classDetailInfo.DataType, "void" , true) == 0)
+				if (string.Compare(classDetailInfo.DataType, "void", true) == 0)
 				{
-				  	errorResult = $"void :{classDetailInfo.MemberName}가 Method Type이 아닙니다.";
+					errorResult = $"void :{classDetailInfo.MemberName}가 Method Type이 아닙니다.";
 					return errorResult;
 				}
 
-				if (string.Compare(ClassInfo.AccessModifier, Constants.AccessModifierDefault, true) == 0)
+				if (string.Compare(ClassInfo.AccessModifier, "public", true) == 0)
 				{
-					CodingTextResult.Append("\t".PadRight(spaceCount) + $"{ClassInfo.AccessModifier} ");
+					CodingTextResult.Append("\t".PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
 				}
 				else
 				{
-					CodingTextResult.Append("\t".PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
+					CodingTextResult.Append("\t".PadRight(spaceCount) + $"private ");
 				}
 
 				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
@@ -134,7 +145,7 @@ namespace Modules.CsvFile.Convert
 				// Comment 검사
 				if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
 				{
-					CodingTextResult.AppendLine($"// {classDetailInfo.Comment}");
+					CodingTextResult.AppendLine($"  // {classDetailInfo.Comment}");
 				}
 				else
 				{
@@ -149,7 +160,7 @@ namespace Modules.CsvFile.Convert
 		public string PropertiesText()
 		{
 			var errorResult = string.Empty;
-			var Properties  = ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.Property, true) == 0);
+			var Properties = ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.Property, true) == 0);
 
 			if (IsExist(Properties) is false) return string.Empty;
 
@@ -162,13 +173,13 @@ namespace Modules.CsvFile.Convert
 					return errorResult;
 				}
 
-				if (string.Compare(ClassInfo.AccessModifier, Constants.AccessModifierDefault, true) == 0)
+				if (string.Compare(ClassInfo.AccessModifier, "public", true) == 0)
 				{
-					CodingTextResult.Append("\t".PadRight(spaceCount) + $"{ClassInfo.AccessModifier} ");
+					CodingTextResult.Append("\t".PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
 				}
 				else
 				{
-					CodingTextResult.Append("\t".PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
+					CodingTextResult.Append("\t".PadRight(spaceCount) + $"private ");
 				}
 
 				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
@@ -184,7 +195,7 @@ namespace Modules.CsvFile.Convert
 				// Comment 검사
 				if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
 				{
-					CodingTextResult.AppendLine($"// {classDetailInfo.Comment}");
+					CodingTextResult.AppendLine($"  // {classDetailInfo.Comment}");
 				}
 				else
 				{
@@ -194,7 +205,7 @@ namespace Modules.CsvFile.Convert
 			CodingTextResult.AppendLine();
 			return string.Empty;
 		}
-			  
+
 		public string MethodsText()
 		{
 			var errorResult = string.Empty;
@@ -204,13 +215,13 @@ namespace Modules.CsvFile.Convert
 
 			foreach (var classDetailInfo in ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.Method, true) == 0))
 			{
-				if (string.Compare(ClassInfo.AccessModifier, Constants.AccessModifierDefault, true) == 0)
+				if (string.Compare(ClassInfo.AccessModifier, "public", true) == 0)
 				{
-					CodingTextResult.Append("\t".PadRight(spaceCount) + $"{ClassInfo.AccessModifier} ");
+					CodingTextResult.Append("\t".PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
 				}
 				else
 				{
-					CodingTextResult.Append("\t".PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
+					CodingTextResult.Append("\t".PadRight(spaceCount) + $"private ");
 				}
 
 				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
@@ -220,13 +231,95 @@ namespace Modules.CsvFile.Convert
 
 				CodingTextResult.AppendLine($"{classDetailInfo.DataType} {classDetailInfo.MemberName}()");
 				CodingTextResult.AppendLine("\t".PadRight(spaceCount) + "{");
-				CodingTextResult.AppendLine();
+
+				// void 검사
+				if (string.Compare(classDetailInfo.DataType, "void", true) == 0)
+				{
+					CodingTextResult.AppendLine();
+				}
+				else
+				{
+					var dataTypes = new List<string>() { "string", "bool", "byte", "char", "decimal", "double", "float", "int", "long", "sbyte", "short", "uint", "ulong", "ushort", };
+					var flag = false;
+					foreach (var dataType in dataTypes)
+					{
+						if (string.Compare(classDetailInfo.DataType, dataType, true) == 0)
+						{
+							flag = true;
+						}
+					}
+
+					if (flag is false)
+					{
+						CodingTextResult.AppendLine("\t".PadRight(spaceCount + 3) + $"var object = new {classDetailInfo.DataType}();");
+						CodingTextResult.AppendLine("\t".PadRight(spaceCount + 3) + "return object;");
+					}
+					else
+					{
+						CodingTextResult.AppendLine("\t".PadRight(spaceCount + 3) + $"{classDetailInfo.DataType} object; // {classDetailInfo.DataType}에 맞는 Value 설정");
+						CodingTextResult.AppendLine("\t".PadRight(spaceCount + 3) + "return object;");
+					}
+				}
+
 				CodingTextResult.Append("\t".PadRight(spaceCount) + "}");
 
 				// Comment 검사
 				if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
 				{
-					CodingTextResult.AppendLine($"// {classDetailInfo.Comment}");
+					CodingTextResult.AppendLine($"  // {classDetailInfo.Comment}");
+					CodingTextResult.AppendLine();
+				}
+				else
+				{
+					CodingTextResult.AppendLine();
+					CodingTextResult.AppendLine();
+				}
+			}
+			CodingTextResult.AppendLine();
+			return string.Empty;
+		}
+
+		public string ConstantsText()
+		{
+			var errorResult = string.Empty;
+			var constants = ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.constant, true) == 0);
+
+			if (IsExist(constants) is false) return string.Empty;
+
+			foreach (var classDetailInfo in constants)
+			{
+				// void 검사
+				if (string.Compare(classDetailInfo.DataType, "void", true) == 0)
+				{
+					errorResult = $"void :{classDetailInfo.MemberName}가 Method Type이 아닙니다.";
+					return errorResult;
+				}
+
+				CodingTextResult.Append("\t".PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} const ");
+
+				var dataTypes = new List<string>() { "string", "bool", "byte", "char", "decimal", "double", "float", "int", "long", "sbyte", "short", "uint", "ulong", "ushort", };
+				var flag = false;
+				foreach (var dataType in dataTypes)
+				{
+					if (string.Compare(classDetailInfo.DataType, dataType, true) == 0)
+					{
+						flag = true;
+					}
+				}
+
+				if (flag is true)
+				{
+					CodingTextResult.Append($"{classDetailInfo.DataType} {classDetailInfo.MemberName} =  ;");
+				}
+				else
+				{
+					return $"{classDetailInfo.MemberName}이 Constant Data Type이 아닙니다.";
+				}
+
+				// Comment 검사
+				if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
+				{
+					CodingTextResult.AppendLine($"  // {classDetailInfo.Comment}");
 				}
 				else
 				{
@@ -237,7 +330,118 @@ namespace Modules.CsvFile.Convert
 			return string.Empty;
 		}
 
-		private bool IsExist(IEnumerable<ClassDetailInfoModel> memberTypes)
+		private string ToCodingStyle(string memberName)
+		{
+			var result = memberName.Trim();
+
+			result = CanDivideFromWhiteSpace(result) is true  ? GetCodingStyle(result) : FirstCharToUpper(result); 
+
+			return result;
+		}
+
+		private string GetCodingStyle(string name)
+		{
+			var result = string.Empty;
+			var list = name.Split(' ');
+
+			for (int i = 0; i < list.Length; i++)
+			{
+				result += FirstCharToUpper(list[i]); ;
+			}
+
+			return result;
+		}
+
+		private bool   CanDivideFromWhiteSpace(string name)
+		{
+			var list = name.ToCharArray();
+
+			foreach (var charResult in list)
+			{
+				if (charResult == ' ')
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
+
+		private string IsCompability(IEnumerable<ClassDetailInfoModel> classDetailInfos)
+		{
+			var duplicatedMemberName = CheckingDuplication(classDetailInfos);
+			if (duplicatedMemberName != string.Empty) return duplicatedMemberName;
+
+			var value = CheckingWhitespace(classDetailInfos);
+			if (value != string.Empty) return value;
+
+			var spacialText = ResultOfSpacialText(classDetailInfos);
+			if (spacialText != string.Empty) return spacialText;
+
+			return string.Empty;
+		}
+
+		private string ResultOfSpacialText(IEnumerable<ClassDetailInfoModel> classDetailInfos)
+		{
+			string str = @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";
+
+			foreach (var classDetailInfo in classDetailInfos)
+			{
+				var rex = new Regex(str);
+				var result = rex.IsMatch(classDetailInfo.MemberName);
+
+				if (result is true)
+					return $"{classDetailInfo.MemberName}에 특수문자가 들어갔습니다. 제외특수문자 : " + @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";
+			}
+			return string.Empty;
+		}
+
+		private string CheckingWhitespace(IEnumerable<ClassDetailInfoModel> classDetailInfos)
+		{
+			foreach (var classDetailInfo in classDetailInfos)
+			{
+				if (classDetailInfo.MemberName is null &&
+					classDetailInfo.MemberType is null &&
+					classDetailInfo.AccessModifier is null &&
+					classDetailInfo.DataType is null)
+				{
+					return "Member 자제가 공란인 행이 있습니다.";
+				}
+				else if (classDetailInfo.AccessModifier is null)
+				{
+					return "Access Modifier이 공란인 행이 있습니다";
+				}
+				else if (classDetailInfo.DataType is null)
+				{
+					return "DataType이 공란인 행이 있습니다";
+				}
+				else if (classDetailInfo.MemberName is null)
+				{
+					return "Member Name이 공란인 행이 있습니다.";
+				}
+				else if (classDetailInfo.MemberType is null)
+				{
+					return "Member Type이 공란인 행이 있습니다";
+				}
+			}
+			return string.Empty;
+		}
+
+		private string CheckingDuplication(IEnumerable<ClassDetailInfoModel> classDetailInfos)
+		{
+			var doublicates = classDetailInfos.GroupBy(classDetailInfo => classDetailInfo.MemberName)
+									.Where(classDetailInfo => classDetailInfo.Count() > 1).Select(result => result.Key);
+
+			if (doublicates.Any() == true)
+			{
+				var duplicatredMemberName = doublicates.FirstOrDefault();
+				return $"Member Name에 {duplicatredMemberName}(이)가 중복되었습니다.";
+			}
+
+			return string.Empty;
+		}
+
+		private bool   IsExist(IEnumerable<ClassDetailInfoModel> memberTypes)
 		{
 			if (memberTypes.Count() == 0)
 			{
@@ -245,5 +449,11 @@ namespace Modules.CsvFile.Convert
 			}
 			return true;
 		}
+
+		private string GetResultOfRemovingSpacialText(string result) => Regex.Replace(result, @"[^a-zA-Z0-9가-힣_]", "", RegexOptions.Singleline);
+
+		private string FirstCharToUpper(string input) => input.First().ToString().ToUpper() + input.Substring(1);
 	}
 }
+
+

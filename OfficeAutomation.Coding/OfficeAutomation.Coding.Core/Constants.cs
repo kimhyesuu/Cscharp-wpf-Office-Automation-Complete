@@ -12,6 +12,7 @@
 		public const string Method							= "Method";
 		public const string Field							= "Field";
 		public const string Property						= "Property";
+		public const string constant						= "constant";
 
 
 		public const char	  Comma						   = ',';

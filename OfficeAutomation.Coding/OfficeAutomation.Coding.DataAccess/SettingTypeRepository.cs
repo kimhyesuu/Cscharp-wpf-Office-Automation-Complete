@@ -4,10 +4,10 @@ namespace OfficeAutomation.Coding.Repository
 {
 	public class SettingTypeRepository : ISettingTypeRepository
 	{
-		public List<string> AccessModifiers { get; }
-		public List<string> ClassTypes		{ get; }
-		public List<string> DataTypes			{ get; }
-		public List<string> MemberTypes		{ get; }
+		public List<string> AccessModifiers      { get; }
+		public List<string> ClassTypes		     { get; }
+		public List<string> DataTypes			     { get; }
+		public List<string> MemberTypes		     { get; }
 
 		public SettingTypeRepository()
 		{
@@ -18,7 +18,7 @@ namespace OfficeAutomation.Coding.Repository
 				"protected"         ,
 				"internal"          ,
 				"protected internal",
-				"private protected"
+				"private protected" ,
 			};
 
 			ClassTypes		 = new List<string>()
