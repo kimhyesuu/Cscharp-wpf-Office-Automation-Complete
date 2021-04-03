@@ -1,14 +1,17 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using OfficeAutomation.Coding.Business.Services;
 
 namespace OfficeAutomation.Coding.Business.Models
 {
-	public class ClassInfoModel : ModelBase
+	public class ClassInfoModel : ModelBase, ISequencedObject
 	{
+		private int _sequenceNumber;
 		private string _classType;
+
+		public int SequenceNumber
+		{
+			get { return _sequenceNumber; }
+			set { SetProperty(ref _sequenceNumber, value); }
+		}
 
 		public string ClassType
 		{
@@ -18,7 +21,5 @@ namespace OfficeAutomation.Coding.Business.Models
 
 		public ClassInfoModel() { }
 
-	
-		//public string ClassType { get; set; }
 	}
 }

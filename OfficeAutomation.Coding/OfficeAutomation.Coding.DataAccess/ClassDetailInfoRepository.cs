@@ -41,7 +41,7 @@ namespace OfficeAutomation.Coding.Repository
 			throw new NotImplementedException();
 		}
 
-		public int Count()
+		public int  Count()
 		{
 			return ClassDetailInfos.Count();
 		}

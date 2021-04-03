@@ -11,7 +11,7 @@
 					  Command="{Binding Path=ImportCommand}"    />
 			<Button Margin="0,5" Width="100" Height="35" Content="Export"		 FontWeight="Bold" 
 					  Command="{Binding Path=ExportCommand}"	  />
-			<Button Margin="5,5" Width="120" Height="35" Content="Open folder" FontWeight="Bold" 
+			<Button Margin="5,5" Width="100" Height="35" Content="Folder" FontWeight="Bold" 
 					  Command="{Binding Path=OpenFolderCommand}"/>
 		</StackPanel>
 </UserControl>

@@ -84,7 +84,7 @@
   <ItemGroup>
     <Compile Include="AggregatorEvent.cs" />
     <Compile Include="Constants.cs" />
-    <Compile Include="CsvFileDialog.cs" />
+    <Compile Include="FileManager.cs" />
     <Compile Include="Message.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>

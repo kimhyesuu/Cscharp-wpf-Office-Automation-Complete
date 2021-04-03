@@ -23,11 +23,11 @@ namespace OfficeAutomation.Coding.Repository
 
 			ClassTypes		 = new List<string>()
 			{
-				"None"				  ,
-				"Abstract"          ,
-				"Partial"           ,
-				"Sealed"            ,
-				"Static"				  ,				
+				"none"				  ,
+				"abstract"          ,
+				"partial"           ,
+				"sealed"            ,
+				"static"				  ,				
 			};
 								 
 			DataTypes	    = new List<string>()
@@ -56,7 +56,6 @@ namespace OfficeAutomation.Coding.Repository
 				"Constant"           ,
 				"Property"           ,
 				"Method"             ,
-				"Event"              ,
 			};
 		}
 	}

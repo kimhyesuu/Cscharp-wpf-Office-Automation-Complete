@@ -1,6 +1,0 @@
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.DataAccess\bin\Debug\OfficeAutomation.Coding.DataAccess.dll
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.DataAccess\bin\Debug\OfficeAutomation.Coding.DataAccess.pdb
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.DataAccess\obj\Debug\OfficeAutomation.Coding.DataAccess.csprojAssemblyReference.cache
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.DataAccess\obj\Debug\OfficeAutomation.Coding.DataAccess.csproj.CoreCompileInputs.cache
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.DataAccess\obj\Debug\OfficeAutomation.Coding.DataAccess.dll
-C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\OfficeAutomation.Coding.DataAccess\obj\Debug\OfficeAutomation.Coding.DataAccess.pdb

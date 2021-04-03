@@ -9,7 +9,9 @@ using Prism.Mvvm;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Modules.CsvFile.ViewModels
 {
@@ -20,8 +22,8 @@ namespace Modules.CsvFile.ViewModels
 		private readonly ISettingTypeService					  _settingTypeService;
 		private readonly IEventAggregator						  _eventAggregator;
 
-		private ObservableCollection<ClassInfoModel> _classInfos;
-		public  ObservableCollection<ClassInfoModel> ClassInfos
+		private ObservableCollection<ClassInfoModel>       _classInfos;
+		public  ObservableCollection<ClassInfoModel>       ClassInfos
 		{
 			get => _classInfos;
 			set => SetProperty(ref _classInfos, value);
@@ -86,7 +88,6 @@ namespace Modules.CsvFile.ViewModels
 					{
 						_classInfos.Add(new ClassInfoModel
 						{
-							SequenceNumber = 0,
 							AccessModifier = "public"			,
 							ClassType		= Constants.ClassTypeDefault,
 							ClassName	   = ReceivedClassName
@@ -96,7 +97,10 @@ namespace Modules.CsvFile.ViewModels
 				}
 			}		
 		}
-						   
+
+		private void   OnclassInfosChanged(object sender, NotifyCollectionChangedEventArgs e)
+			=> SequencingService.SetCollectionSequence(this._classInfos);
+
 		private void   CreateClassDetailInfos(object classInfo)
 		{
 			var Receivedinfo = classInfo as ClassInfoModel;
@@ -125,10 +129,10 @@ namespace Modules.CsvFile.ViewModels
 		private void   SendPriviewText()
 		{
 			var textResult          = string.Empty;
-			var errorLogs           = new List<string>();
+			var errorLogs           = new List<string>(); 
 			var convertingData      = new ConvertTo();
-			var selectedClassInfo   = ClassInfos.Where(classInfo => string.Compare(classInfo.ClassName ,SelectedClassName,true) == 0).FirstOrDefault();
-			var DetailedInfosToThis = ClassDetailInfos.Where(classDetailInfo => classDetailInfo.ClassName == selectedClassInfo.ClassName);
+			var selectedClassInfo   = ClassInfos.Where(		 classInfo => classInfo.ClassName.Equals(SelectedClassName)     ).FirstOrDefault();
+			var DetailedInfosToThis = ClassDetailInfos.Where(classDetailInfo => classDetailInfo.ClassName.Equals(selectedClassInfo.ClassName));
 
 			if (selectedClassInfo is null || DetailedInfosToThis.Count() == 0) return;
 
@@ -153,34 +157,85 @@ namespace Modules.CsvFile.ViewModels
 			if (IsCompability(errorLogs) is true)
 			{
 				textResult = convertingData.Result();
-				_eventAggregator.GetEvent<SendConvertedMessage>().Publish(textResult);	
+				_eventAggregator.GetEvent<SendPreviewMessage>().Publish(textResult);	
 			}
 			convertingData.Reset();
 		}
 						   
-		private void   SendResults()
-		{
-			throw new NotImplementedException();
-		}
-						   
-		private void   AddDatatype()
-		{		
-			if (string.IsNullOrWhiteSpace(_newDataType) ||
-				 ClassDetailInfos.Count == 0)
+		private async void   SendResults()
+		{						
+			var convertingData = new ConvertTo();
+			var errorLogs      = new List<string>();
+			var resultlist     = new List<object>();
+			var textResult     = string.Empty;
+
+			if (ClassDetailInfos.Count == 0 || ClassInfos.Count == 0)
 			{
-				SendErrorLogging("클래스 세부 사항 목록이 없거나 새로운 타입이 빈 공란입니다.");
-				return;
-			}
-			else if (IsSpecialText(_newDataType) is true)
-			{
-				SendErrorLogging("특수문자 제거해주세요.(제외 특수문자 : <, >)");
+				Message.InfoOKMessage("Data가 없습니다.");
 				return;
 			}
 
-			MemberDataTypes.Add(NewDataType);
-			_newDataType = string.Empty;
+			SendErrorLogging(string.Empty);
+
+			foreach (var classInfo in ClassInfos)
+			{
+				var reuslt = Task.Run(() => GetErrorLogs(classInfo, convertingData));
+				errorLogs = await reuslt;
+
+				if (IsCompability(errorLogs) is true && errorLogs != null)
+				{
+					textResult = convertingData.Result();
+					resultlist.Add(new { className = classInfo.ClassName, text = textResult });
+					convertingData.Reset();
+				}
+				else
+				{
+					convertingData.Reset();
+					return;
+				}
+			}
+
+			ClearData();			
+			_eventAggregator.GetEvent<SendSavingMessages>().Publish(resultlist);
 		}
-						   
+	
+		private List<string> GetErrorLogs(ClassInfoModel classInfo, ConvertTo convertingData)
+		{
+			var errorLogs			   = new List<string>();
+			var DetailedInfosToThis = ClassDetailInfos.Where(classDetailInfo => classDetailInfo.ClassName.Equals(SelectedClassName));
+			if (DetailedInfosToThis.Count() == 0)
+			{
+				return null;
+			}
+
+			var emptyOrError = convertingData.Initialize(classInfo, DetailedInfosToThis);
+			if (emptyOrError != string.Empty)
+			{
+				errorLogs.Add(emptyOrError);
+			}
+
+			convertingData.StartText();
+
+			errorLogs.Add(convertingData.ConstantsText());
+			errorLogs.Add(convertingData.FieldsText());
+			errorLogs.Add(convertingData.PropertiesText());
+			errorLogs.Add(convertingData.ConstructorText());
+			errorLogs.Add(convertingData.MethodsText());
+
+			convertingData.EndText();
+
+			return errorLogs;
+		}
+
+		private void   AddDatatype()
+		{
+			var addingNewtype = _newDataType;
+			if (IsDatatypeCompability(addingNewtype) is false) return;
+			
+			MemberDataTypes.Add(addingNewtype);
+			NewDataType = string.Empty;
+		}
+
 		private void   SendErrorLogging(string errorLog)
 		{
 			_eventAggregator.GetEvent<SendLog>().Publish(errorLog);
@@ -211,14 +266,51 @@ namespace Modules.CsvFile.ViewModels
 			return string.Empty;
 		}
 
-		private bool   IsSpecialText(string txt)
+		private bool   IsDatatypeCompability(string addingNewtype)
+		{
+			if (string.IsNullOrWhiteSpace(addingNewtype) ||
+				 ClassDetailInfos.Count == 0)
+			{
+				SendErrorLogging("클래스 세부 사항 목록이 없거나 새로운 타입이 빈 공란입니다.");
+				return false;
+			}
+			else if (IsSpecialText(addingNewtype) is true)
+			{
+				SendErrorLogging("특수문자 제거해주세요.(제외 특수문자 : <, >)");
+				return false;
+			}
+			else if (IsDuplicatedDataType(addingNewtype) is true)
+			{
+				SendErrorLogging($"추가할 Data Type이 중복되었습니다.");
+				return false;
+			}
+
+			return true;
+		}
+
+		private bool   IsSpecialText(string addingNewtype)
 		{
 			// string str = @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";		
 			string str = @"[~!@\#$%^&*\()\=+|\\/:;?""']";
 			var	 rex = new System.Text.RegularExpressions.Regex(str);
-			return rex.IsMatch(txt);
+			return rex.IsMatch(addingNewtype);
 		}
-						   
+
+		private bool   IsDuplicatedDataType(string addingNewtype)
+		{
+			var doublicates = MemberDataTypes.Where(dataType => dataType.Equals(addingNewtype)).Count();
+
+			return doublicates >= 1 ? true : false;
+		}
+
+		private void   ClearData()
+		{
+			ClassInfos.Clear();
+			ClassDetailInfos.Clear();
+			ClassInfos = null;
+			ClassDetailInfos = null;
+		}
+
 		private void   Initialize()
 		{
 			InitializeCommand();
@@ -265,8 +357,10 @@ namespace Modules.CsvFile.ViewModels
 
 			_classInfos			= new ObservableCollection<ClassInfoModel>();
 			_classDetailInfos = new ObservableCollection<ClassDetailInfoModel>();
+
+			_classInfos.CollectionChanged += OnclassInfosChanged;
 		}
-						   
+
 		private void   InitializeCommand()
 		{
 			CreateCommand						= new DelegateCommand<object>(CreateClassDetailInfos);

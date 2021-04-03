@@ -9,7 +9,7 @@ namespace Modules.CsvFile.Convert
 {
 	public class ConvertTo
 	{
-		private const int spaceCount = 6;
+		private const int spaceCount = 4;
 
 		private ClassInfoModel ClassInfo							 { get; set; }
 		private List<ClassDetailInfoModel> ClassDetailInfos { get;      }
@@ -21,7 +21,7 @@ namespace Modules.CsvFile.Convert
 			CodingTextResult = new StringBuilder();
 		}
 
-		public string Initialize(ClassInfoModel classInfo, IEnumerable<ClassDetailInfoModel> classDetailInfos)
+		public string  Initialize(ClassInfoModel classInfo, IEnumerable<ClassDetailInfoModel> classDetailInfos)
 		{
 			var result = IsCompability(classDetailInfos);
 			if (result != string.Empty)
@@ -41,7 +41,6 @@ namespace Modules.CsvFile.Convert
 			{
 				ClassDetailInfos.Add(new ClassDetailInfoModel()
 				{
-					SequenceNumber = classDetailInfo.SequenceNumber,
 					AccessModifier = classDetailInfo.AccessModifier.Trim(),
 					MemberName = ToCodingStyle(classDetailInfo.MemberName),
 					MemberType = classDetailInfo.MemberType.Trim(),
@@ -53,64 +52,65 @@ namespace Modules.CsvFile.Convert
 			return string.Empty;
 		}
 
-		public void   Reset()
+		public void    Reset()
 		{
 			ClassInfo = null;
 			ClassDetailInfos.Clear();
 			CodingTextResult.Clear();
 		}
-
-		public string Result()
+						   
+		public string  Result()
 		{
 			// 로그 데이터가 있으면 로그로 전달하자 
 			return CodingTextResult.ToString();
 		}
-
-		public void   StartText()
+						   
+		public void    StartText()
 		{
 			var text = string.Empty;
 
+			CodingTextResult.Append(string.Empty.PadRight(5));
 			if (string.Compare(ClassInfo.AccessModifier, "public", true) == 0)
 			{
-				CodingTextResult.Append("\t" + $"{ClassInfo.AccessModifier} " );
+				CodingTextResult.Append($"{ClassInfo.AccessModifier} " );
 			}
 
 			if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeDefault, true) == 0)
 			{
-				text = "class {ClassInfo.ClassName}";
+				CodingTextResult.AppendLine($"class {ClassInfo.ClassName}");
 			}
 			else
 			{
-				text = "\t" + $"{ClassInfo.AccessModifier} {ClassInfo.ClassType} {ClassInfo.ClassName}";
+				CodingTextResult.AppendLine($"{ClassInfo.ClassType} class {ClassInfo.ClassName}");
 			}
 
-			CodingTextResult.AppendLine("\t{");
+			CodingTextResult.AppendLine(string.Empty.PadRight(5) + "{");
 		}
-						  
-		public void   EndText()
+						   
+		public void    EndText()
 		{
-			var text = "\t}";
+			var text = string.Empty.PadRight(5) + "}";
 			CodingTextResult.AppendLine(text);
 			CodingTextResult.AppendLine();
 			CodingTextResult.AppendLine();
 			CodingTextResult.AppendLine();
 		}
-
-		public string ConstructorText()
+						   
+		public string  ConstructorText()
 		{
 			var result = string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0 ? true : false;
 			if (result is false)
 			{
-				CodingTextResult.AppendLine("\t".PadRight(spaceCount) + $"public {ClassInfo.ClassName}()");
-				CodingTextResult.AppendLine("\t".PadRight(spaceCount) + "{");
+				CodingTextResult.AppendLine( string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"public {ClassInfo.ClassName}()");
+				CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "{");
 				CodingTextResult.AppendLine();
-				CodingTextResult.AppendLine("\t".PadRight(spaceCount) + "}");
+				CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "}");
 				CodingTextResult.AppendLine();
 			}
 			return string.Empty;
 		}
-
-		public string FieldsText()
+						   
+		public string  FieldsText()
 		{
 			var errorResult = string.Empty;
 			var fields = ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.Field, true) == 0);
@@ -128,11 +128,11 @@ namespace Modules.CsvFile.Convert
 
 				if (string.Compare(ClassInfo.AccessModifier, "public", true) == 0)
 				{
-					CodingTextResult.Append("\t".PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
+					CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
 				}
 				else
 				{
-					CodingTextResult.Append("\t".PadRight(spaceCount) + $"private ");
+					CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"private ");
 				}
 
 				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
@@ -140,7 +140,7 @@ namespace Modules.CsvFile.Convert
 					CodingTextResult.Append($"{ClassInfo.ClassType} ");
 				}
 
-				CodingTextResult.Append($"{classDetailInfo.DataType} {classDetailInfo.MemberName};");
+				CodingTextResult.Append($"{classDetailInfo.DataType}  _{FirstCharToLower(classDetailInfo.MemberName)};");
 
 				// Comment 검사
 				if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
@@ -156,8 +156,8 @@ namespace Modules.CsvFile.Convert
 			CodingTextResult.AppendLine();
 			return string.Empty;
 		}
-
-		public string PropertiesText()
+						   
+		public string  PropertiesText()
 		{
 			var errorResult = string.Empty;
 			var Properties = ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.Property, true) == 0);
@@ -175,11 +175,11 @@ namespace Modules.CsvFile.Convert
 
 				if (string.Compare(ClassInfo.AccessModifier, "public", true) == 0)
 				{
-					CodingTextResult.Append("\t".PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
+					CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
 				}
 				else
 				{
-					CodingTextResult.Append("\t".PadRight(spaceCount) + $"private ");
+					CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"private ");
 				}
 
 				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
@@ -205,8 +205,8 @@ namespace Modules.CsvFile.Convert
 			CodingTextResult.AppendLine();
 			return string.Empty;
 		}
-
-		public string MethodsText()
+						   
+		public string  MethodsText()
 		{
 			var errorResult = string.Empty;
 			var Methods = ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.Method, true) == 0);
@@ -217,11 +217,11 @@ namespace Modules.CsvFile.Convert
 			{
 				if (string.Compare(ClassInfo.AccessModifier, "public", true) == 0)
 				{
-					CodingTextResult.Append("\t".PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
+					CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
 				}
 				else
 				{
-					CodingTextResult.Append("\t".PadRight(spaceCount) + $"private ");
+					CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"private ");
 				}
 
 				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
@@ -230,7 +230,7 @@ namespace Modules.CsvFile.Convert
 				}
 
 				CodingTextResult.AppendLine($"{classDetailInfo.DataType} {classDetailInfo.MemberName}()");
-				CodingTextResult.AppendLine("\t".PadRight(spaceCount) + "{");
+				CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "{");
 
 				// void 검사
 				if (string.Compare(classDetailInfo.DataType, "void", true) == 0)
@@ -251,17 +251,17 @@ namespace Modules.CsvFile.Convert
 
 					if (flag is false)
 					{
-						CodingTextResult.AppendLine("\t".PadRight(spaceCount + 3) + $"var object = new {classDetailInfo.DataType}();");
-						CodingTextResult.AppendLine("\t".PadRight(spaceCount + 3) + "return object;");
+						CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"var obj = new {classDetailInfo.DataType}();");
+						CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
 					}
 					else
 					{
-						CodingTextResult.AppendLine("\t".PadRight(spaceCount + 3) + $"{classDetailInfo.DataType} object; // {classDetailInfo.DataType}에 맞는 Value 설정");
-						CodingTextResult.AppendLine("\t".PadRight(spaceCount + 3) + "return object;");
+						CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"{classDetailInfo.DataType} obj; // {classDetailInfo.DataType}에 맞는 value 설정할 것");
+						CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
 					}
 				}
 
-				CodingTextResult.Append("\t".PadRight(spaceCount) + "}");
+				CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "}");
 
 				// Comment 검사
 				if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
@@ -275,11 +275,10 @@ namespace Modules.CsvFile.Convert
 					CodingTextResult.AppendLine();
 				}
 			}
-			CodingTextResult.AppendLine();
 			return string.Empty;
 		}
-
-		public string ConstantsText()
+						   
+		public string  ConstantsText()
 		{
 			var errorResult = string.Empty;
 			var constants = ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.constant, true) == 0);
@@ -295,7 +294,7 @@ namespace Modules.CsvFile.Convert
 					return errorResult;
 				}
 
-				CodingTextResult.Append("\t".PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} const ");
+				CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} const ");
 
 				var dataTypes = new List<string>() { "string", "bool", "byte", "char", "decimal", "double", "float", "int", "long", "sbyte", "short", "uint", "ulong", "ushort", };
 				var flag = false;
@@ -309,6 +308,7 @@ namespace Modules.CsvFile.Convert
 
 				if (flag is true)
 				{
+
 					CodingTextResult.Append($"{classDetailInfo.DataType} {classDetailInfo.MemberName} =  ;");
 				}
 				else
@@ -453,6 +453,9 @@ namespace Modules.CsvFile.Convert
 		private string GetResultOfRemovingSpacialText(string result) => Regex.Replace(result, @"[^a-zA-Z0-9가-힣_]", "", RegexOptions.Singleline);
 
 		private string FirstCharToUpper(string input) => input.First().ToString().ToUpper() + input.Substring(1);
+
+		private string FirstCharToLower(string input) => input.First().ToString().ToLower() + input.Substring(1);
+
 	}
 }
 

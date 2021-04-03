@@ -3,8 +3,8 @@ using OfficeAutomation.Coding.Business.Models;
 using OfficeAutomation.Coding.Business.Services;
 using OfficeAutomation.Coding.Core;
 using Prism.Commands;
+using Prism.Events;
 using Prism.Mvvm;
-using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
@@ -18,17 +18,18 @@ namespace Modules.Setting.ViewModels
 		public DelegateCommand ImportCommand     { get; private set; }
 		public DelegateCommand ExportCommand     { get; private set; }
 		public DelegateCommand OpenFolderCommand { get; private set; }
-
-		public FileManagementViewModel()
+		
+		public FileManagementViewModel(IEventAggregator eventAggregator)
 		{
+			eventAggregator.GetEvent<SendSavingMessages>().Subscribe(MessagesReceived);
 			_classDetailInfoService = new ClassDetailInfoService();
 			ImportCommand				= new DelegateCommand(OpenCsvFile);
 			OpenFolderCommand			= new DelegateCommand(OpenFolder);
 		}
-
+	
 		private void OpenFolder()
 		{
-			var path = CsvFileDialog.CsvPath;
+			var path = FileManager.CsvPath;
 
 			if(path != null)
 			{
@@ -40,7 +41,7 @@ namespace Modules.Setting.ViewModels
 		{
 			var selectedFilepath     = string.Empty;
 			var openFileDlg		    = new Microsoft.Win32.OpenFileDialog();
-			CsvFileDialog CsvFileDlg = new CsvFileDialog(openFileDlg);
+			FileManager CsvFileDlg = new FileManager(openFileDlg);
 
 			CsvFileDlg.Initialize();
 			selectedFilepath			 = CsvFileDlg.GetDialogFilePath();
@@ -107,6 +108,22 @@ namespace Modules.Setting.ViewModels
 					Comment			= data[2]								,
 				};
 			}));
+		}
+
+		private void MessagesReceived(List<object> convertedResults)
+		{
+			var className = string.Empty;
+			var text = string.Empty;
+			foreach (var convertedResult in convertedResults)
+			{
+				var results = convertedResult.GetType().GetProperties();
+				className = results[0].GetValue(convertedResult, null).ToString();
+				text		 = results[1].GetValue(convertedResult, null).ToString();
+				FileManager.CreateTxtFile(className.ToString());
+				FileManager.WriteTXT(text.ToString());
+			}
+
+			Message.InfoMessage("성공적으로 저장했습니다.");
 		}
 	}
 }

@@ -3,17 +3,10 @@ using Prism.Mvvm;
 
 namespace OfficeAutomation.Coding.Business.Models
 {
-	public class ModelBase : BindableBase, ISequencedObject
+	public class ModelBase : BindableBase 
 	{
-		private int		_sequenceNumber;
 		private string _accessModifier;
 		private string _className;
-
-		public int SequenceNumber
-		{
-			get { return _sequenceNumber; }
-			set { SetProperty(ref _sequenceNumber, value); }
-		}
 
 		public string AccessModifier
 		{

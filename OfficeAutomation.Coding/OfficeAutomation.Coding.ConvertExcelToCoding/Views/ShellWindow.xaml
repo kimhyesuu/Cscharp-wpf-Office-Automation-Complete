@@ -15,7 +15,7 @@
         WindowStyle			   = "ToolWindow"
         ResizeMode			   = "NoResize" 
 		  Height="1020" 
-		  Width ="1600">
+		  Width ="1700">
 
 	<Grid>
 		<Grid.RowDefinitions>

@@ -65,7 +65,7 @@ namespace OfficeAutomation.Coding.Business.Services
 			throw new NotImplementedException();
 		}
 
-		public int GetCount()
+		public int  GetCount()
 		{
 			return _repository.Count();
 		}

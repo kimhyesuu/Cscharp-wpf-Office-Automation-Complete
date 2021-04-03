@@ -15,7 +15,7 @@ namespace Modules.Coding.ViewModels
 
 		public CodingInfoViewModel(IEventAggregator eventAggregator)
 		{
-			eventAggregator.GetEvent<SendConvertedMessage>().Subscribe(MessageReceived);
+			eventAggregator.GetEvent<SendPreviewMessage>().Subscribe(MessageReceived);
 		}
 
 		private void MessageReceived(string paremeters)

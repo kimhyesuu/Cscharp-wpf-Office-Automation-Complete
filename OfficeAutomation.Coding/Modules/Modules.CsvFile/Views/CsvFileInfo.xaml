@@ -145,12 +145,12 @@
 						<DataGridTextColumn Header="Name" Width="120"
 												  Binding="{Binding Path=MemberName}"/>
 
-						<DataGridComboBoxColumn Header="Member Type" Width="180"
+						<DataGridComboBoxColumn Header="Member Type" Width="120"
                                 SelectedItemBinding="{Binding MemberType}"
                                 ElementStyle			="{StaticResource MemberTypesStyle}"
                                 EditingElementStyle="{StaticResource MemberTypesStyle}"/>
 
-						<DataGridTextColumn Header="Comment" Width="120"
+						<DataGridTextColumn Header="Comment" Width="180"
 												  Binding="{Binding Path=Comment}"/>
 					</DataGrid.Columns>
 
@@ -163,7 +163,7 @@
 								Text="{Binding Path=NewDataType}" />
 					<Button  Content="Add"        FontWeight="Bold" Margin="5,0,0,0" Width="75" Height="30"
 								Command ="{Binding AddDataTypeCommand}"/>
-					<Button  Margin="325,0,0,0" Width="120" Height="35" HorizontalAlignment="Right" Content="Confirm" FontWeight="Bold"
+					<Button  Margin="385,0,0,0" Width="120" Height="35" HorizontalAlignment="Right" Content="Confirm" FontWeight="Bold"
 							   Command ="{Binding ConfirmCommand}"/>
 				</StackPanel>
 			</StackPanel>
