@@ -76,7 +76,6 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Managers\LogManager.cs" />
     <Compile Include="Managers\TimerManager.cs" />
     <Compile Include="Models\ClassDetailInfoModel.cs" />
     <Compile Include="Models\ClassInfoModel.cs" />

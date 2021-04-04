@@ -15,12 +15,12 @@
 				</Grid.RowDefinitions>
 
 				<!--Header-->
-				<Border  Grid.Row="0" Background="#FF5158C7" BorderBrush="#FF1C2235"  BorderThickness="1"  CornerRadius="2,2,0,0"  >
+				<Border  Grid.Row="0" Background="#56463C" BorderBrush="#8E837D"  BorderThickness="1"  CornerRadius="2,2,0,0"  >
 					<ContentPresenter Margin="4" ContentSource="Header"  RecognizesAccessKey="True" />
 				</Border>
 
 				<!-- Main -->
-				<Border  Grid.Row="1"  Background="#FFF9F9F9"   BorderBrush="#FF595584"  CornerRadius="0,0,2,2" BorderThickness="1">
+				<Border  Grid.Row="1"  Background="#D9D5D3"   BorderBrush="#8E837D"  CornerRadius="0,0,2,2" BorderThickness="1">
 					<ContentPresenter Margin="4" />
 				</Border>
 			</Grid>
@@ -45,7 +45,7 @@
 			<!--	Col 2 Row 0 -->
 			<GroupBox Grid.Column="2" Grid.Row="0" Header="Preview" FontSize="16"  Style="{StaticResource HsGroupBoxStyle}" >
 				<Border Margin="5" Height="800" BorderThickness="1.3" BorderBrush="Black" CornerRadius="1.3" >
-					<TextBox Margin="0.3" Background="White" ScrollViewer.CanContentScroll="True" IsReadOnly="True" 
+				<TextBox Margin="0.3" ScrollViewer.CanContentScroll="True" IsReadOnly="True" FontWeight="SemiBold"  Background="#F6F5F5"
 								Text="{Binding Path=Result}"/>
 				</Border>
 			</GroupBox>

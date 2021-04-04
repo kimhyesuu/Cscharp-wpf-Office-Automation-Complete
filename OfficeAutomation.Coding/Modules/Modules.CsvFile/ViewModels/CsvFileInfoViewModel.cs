@@ -43,15 +43,17 @@ namespace Modules.CsvFile.ViewModels
 			set => SetProperty(ref _newDataType, value); 
 		}
 
-		private string												 SelectedClassName				{ get;			set; }  // CreateClassDetailInfos : Receive, SendCodingText : Using
+		private string							  SelectedClassName									{ get;		 set;  }  // CreateClassDetailInfos : Receive, SendCodingText : Using
 
-		public  ObservableCollection<string>				 ClassAccessModifiers         { get;				  }
-		public  ObservableCollection<string>			    AccessModifiers					{ get;		  	     }
-		public  ObservableCollection<string>			    MemberDataTypes				   { get;		  	     } 
-		public  ObservableCollection<string>			    MemberTypes					   { get;		  		  } 
-		public  ObservableCollection<string>			    ClassTypes						   { get;		    	  } 
-																											   				  
-		public  System.Windows.Threading.DispatcherTimer checkReadedFileTimer		   { get;		   set; }
+		public  ObservableCollection<string>				 ClassAccessModifiers         { get;				 }
+		public  ObservableCollection<string>			    AccessModifiers					{ get;		  	    }
+		public  ObservableCollection<string>			    MemberDataTypes				   { get;		  	    } 
+		public  ObservableCollection<string>			    MemberTypes					   { get;		  		 } 
+		public  ObservableCollection<string>			    ClassTypes						   { get;		    	 }
+
+
+		public  System.Windows.Threading.DispatcherTimer checkReadedFileTimer		   { get;		  set; }
+		private string												 BaseClassName					   { get;		  set; }
 		private object												 _lockObject;
 		
 		public  DelegateCommand<object>						 CreateCommand						{ get; private set; }
@@ -86,6 +88,11 @@ namespace Modules.CsvFile.ViewModels
 
 					foreach (var ReceivedClassName in ReceivedClassNames)
 					{
+						if(IsBaseClass(ReceivedClassName) is true)
+						{
+							BaseClassName = ReceivedClassName;
+						}
+
 						_classInfos.Add(new ClassInfoModel
 						{
 							AccessModifier = "public"			,
@@ -93,6 +100,7 @@ namespace Modules.CsvFile.ViewModels
 							ClassName	   = ReceivedClassName
 						});
 					}
+
 					checkReadedFileTimer.Stop();
 				}
 			}		
@@ -104,20 +112,20 @@ namespace Modules.CsvFile.ViewModels
 		private void   CreateClassDetailInfos(object classInfo)
 		{
 			var Receivedinfo = classInfo as ClassInfoModel;
-
 			var emptyOrError = IsCreatingCompability(Receivedinfo);
 			if (emptyOrError != string.Empty)
 			{
 				SendErrorLogging(emptyOrError);
 				return;
 			}
-
+			
 			SendErrorLogging(emptyOrError);
 
-			var className					  = Receivedinfo.ClassName;
-			SelectedClassName = className;
-			var selectedclassDetailInfos = _classDetailInfoService.GetAll().Where(classDetailInfo => classDetailInfo.ClassName == className);
-	
+			var className		      = Receivedinfo.ClassName;
+			SelectedClassName       = className;
+			var allClassDetailInfos = _classDetailInfoService.GetAll();
+
+			var selectedclassDetailInfos = allClassDetailInfos.Where(classDetailInfo => classDetailInfo.ClassName.Equals(className));
 			if (_classDetailInfos.Count > 0) _classDetailInfos.Clear();
 
 			foreach (var classDetailInfo in selectedclassDetailInfos)
@@ -125,33 +133,34 @@ namespace Modules.CsvFile.ViewModels
 				_classDetailInfos.Add(classDetailInfo);
 			}
 		}
-						   
+
 		private void   SendPriviewText()
 		{
-			var textResult          = string.Empty;
-			var errorLogs           = new List<string>(); 
-			var convertingData      = new ConvertTo();
-			var selectedClassInfo   = ClassInfos.Where(		 classInfo => classInfo.ClassName.Equals(SelectedClassName)     ).FirstOrDefault();
-			var DetailedInfosToThis = ClassDetailInfos.Where(classDetailInfo => classDetailInfo.ClassName.Equals(selectedClassInfo.ClassName));
+			var textResult              = string.Empty;
+			var emptyOrError				 = string.Empty;
+			var errorLogs               = new List<string>(); 
+			var convertingData          = new ConvertTo();
+			var selectedClassInfo       = ClassInfos.Where (classInfo => classInfo.ClassName.Equals(SelectedClassName)).FirstOrDefault();
+			var baseClassInfo				 = _classInfos.Where(o			=> o.ClassName.Equals(BaseClassName)				 ).FirstOrDefault();
+			var detailedInfos     		 = _classDetailInfoService.GetAll();
 
-			if (selectedClassInfo is null || DetailedInfosToThis.Count() == 0) return;
+			if (selectedClassInfo is null || detailedInfos.Count() == 0) return;
 
-			var emptyOrError = convertingData.Initialize(selectedClassInfo, DetailedInfosToThis);
+			emptyOrError = convertingData.Initialize(baseClassInfo, selectedClassInfo, detailedInfos);
 			if (emptyOrError != string.Empty)
 			{
 				SendErrorLogging(emptyOrError);
 				return;
 			}
+
 			SendErrorLogging(emptyOrError);
 
-			convertingData.StartText();
-
+			errorLogs.Add(convertingData.StartText()		 );
 			errorLogs.Add(convertingData.ConstantsText()  );
 			errorLogs.Add(convertingData.FieldsText()	    );
 			errorLogs.Add(convertingData.PropertiesText() );
 			errorLogs.Add(convertingData.ConstructorText());
-			errorLogs.Add(convertingData.MethodsText()    );
-
+			//errorLogs.Add(convertingData.MethodsText()    );
 			convertingData.EndText();
 
 			if (IsCompability(errorLogs) is true)
@@ -161,7 +170,7 @@ namespace Modules.CsvFile.ViewModels
 			}
 			convertingData.Reset();
 		}
-						   
+
 		private async void   SendResults()
 		{						
 			var convertingData = new ConvertTo();
@@ -208,21 +217,21 @@ namespace Modules.CsvFile.ViewModels
 				return null;
 			}
 
-			var emptyOrError = convertingData.Initialize(classInfo, DetailedInfosToThis);
-			if (emptyOrError != string.Empty)
-			{
-				errorLogs.Add(emptyOrError);
-			}
+			//var emptyOrError = convertingData.Initialize(classInfo, DetailedInfosToThis);
+			//if (emptyOrError != string.Empty)
+			//{
+			//	errorLogs.Add(emptyOrError);
+			//}
 
-			convertingData.StartText();
+			//convertingData.StartText();
 
-			errorLogs.Add(convertingData.ConstantsText());
-			errorLogs.Add(convertingData.FieldsText());
-			errorLogs.Add(convertingData.PropertiesText());
-			errorLogs.Add(convertingData.ConstructorText());
-			errorLogs.Add(convertingData.MethodsText());
+			//errorLogs.Add(convertingData.ConstantsText());
+			//errorLogs.Add(convertingData.FieldsText());
+			//errorLogs.Add(convertingData.PropertiesText());
+			//errorLogs.Add(convertingData.ConstructorText());
+			//errorLogs.Add(convertingData.MethodsText());
 
-			convertingData.EndText();
+			//convertingData.EndText();
 
 			return errorLogs;
 		}
@@ -276,7 +285,7 @@ namespace Modules.CsvFile.ViewModels
 			}
 			else if (IsSpecialText(addingNewtype) is true)
 			{
-				SendErrorLogging("특수문자 제거해주세요.(제외 특수문자 : <, >)");
+				SendErrorLogging("특수문자 제거해주세요.(제외한 특수문자 : <, >)");
 				return false;
 			}
 			else if (IsDuplicatedDataType(addingNewtype) is true)
@@ -303,6 +312,25 @@ namespace Modules.CsvFile.ViewModels
 			return doublicates >= 1 ? true : false;
 		}
 
+		private bool   IsBaseClass(string receivedClassName)
+		{
+			var charList = receivedClassName.ToLower().ToCharArray();
+
+			for (int i = 0; i < charList.Length; i++)
+			{
+				if (charList[i].Equals('b'))
+				{
+					var result = receivedClassName.Substring(i, 4).ToLower();
+					if (result.Equals("base") == true)
+					{
+						return true;
+					}
+					break;
+				}
+			}
+			return false;
+		}
+
 		private void   ClearData()
 		{
 			ClassInfos.Clear();
@@ -319,9 +347,9 @@ namespace Modules.CsvFile.ViewModels
 
 			InitializeTimer();
 		}
-						   
+
 		#region 종류에 맞는 Initialize로 구성
-						   
+
 		private void   InitializeData()
 		{
 			var accessModifiers = _settingTypeService.GetAccessModifiers();
@@ -355,9 +383,8 @@ namespace Modules.CsvFile.ViewModels
 				ClassTypes.Add(classType);
 			}
 
-			_classInfos			= new ObservableCollection<ClassInfoModel>();
-			_classDetailInfos = new ObservableCollection<ClassDetailInfoModel>();
-
+			_classInfos							 = new ObservableCollection<ClassInfoModel>();
+			_classDetailInfos					 = new ObservableCollection<ClassDetailInfoModel>();
 			_classInfos.CollectionChanged += OnclassInfosChanged;
 		}
 

@@ -1,4 +1,7 @@
-﻿Cat,Feed Kinds,good
+﻿AnimalBase,Feed Kinds,good
+AnimalBase,Pain,good
+AnimalBase,Kinds,good
+Cat,Feed Kinds,good
 Cat,Pain,good
 Cat,Kinds,good
 Dog,Feed Kinds,good

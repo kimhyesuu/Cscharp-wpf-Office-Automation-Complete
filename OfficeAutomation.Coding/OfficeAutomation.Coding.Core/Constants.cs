@@ -9,9 +9,9 @@
 		public const string MemberTypeDefault			= "field";
 		public const string ClassTypeDefault			= "none";
 		public const string ClassTypeStatic			   = "static";
-		public const string Method							= "Method";
-		public const string Field							= "Field";
-		public const string Property						= "Property";
+		public const string Method							= "method";
+		public const string Field							= "field";
+		public const string Property						= "property";
 		public const string constant						= "constant";
 		public const string txtFolder						= "\\result";
 		public const string TXT								= ".txt";

@@ -1,5 +1,6 @@
 ﻿using OfficeAutomation.Coding.Business.Models;
 using OfficeAutomation.Coding.Core;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,235 +8,574 @@ using System.Text.RegularExpressions;
 
 namespace Modules.CsvFile.Convert
 {
+	public enum Inheritance
+	{
+		None   ,
+		Parent ,
+		Child  ,
+	}
+
 	public class ConvertTo
 	{
 		private const int spaceCount = 4;
 
-		private ClassInfoModel ClassInfo							 { get; set; }
-		private List<ClassDetailInfoModel> ClassDetailInfos { get;      }
-		private StringBuilder CodingTextResult					 { get;      }
+		private  Inheritance				         InheritanceFlag		{ get; set; }
+		private  ClassInfoModel			         BaseClassInfo		   { get; set; }
+		private	ClassInfoModel			         ClassInfo			   { get; set; }
+
+		private  List<ClassDetailInfoModel>    AllClassDetailInfos  { get; set; }
+		private  List<ClassDetailInfoModel>    BaseClassDetailInfos { get; set; }
+		private  List<ClassDetailInfoModel>    ClassDetailInfos     { get; set; }
+		private  StringBuilder					   CodingTextResult	   { get;      }
 
 		public ConvertTo()
 		{
-			ClassDetailInfos = new List<ClassDetailInfoModel>();
-			CodingTextResult = new StringBuilder();
+			ClassDetailInfos	   = new List<ClassDetailInfoModel>();
+			AllClassDetailInfos  = new List<ClassDetailInfoModel>();
+			BaseClassDetailInfos = new List<ClassDetailInfoModel>();
+			CodingTextResult	   = new StringBuilder();
 		}
 
-		public string  Initialize(ClassInfoModel classInfo, IEnumerable<ClassDetailInfoModel> classDetailInfos)
+		private Inheritance ParentOrChild(ClassInfoModel baseClassInfo, ClassInfoModel classInfo)
 		{
-			var result = IsCompability(classDetailInfos);
+			if (baseClassInfo.ClassType.Equals(Constants.ClassTypeStatic) is false &&
+			    baseClassInfo.ClassType.Equals(ClassTypeSealed)			  is false &&
+				 baseClassInfo.ClassName.Equals(classInfo.ClassName)		  is true)
+			{
+				return Inheritance.Parent;
+			}		
+				return Inheritance.Child;
+		}
+
+		// 완료
+		internal string Initialize(ClassInfoModel baseClassInfo, ClassInfoModel selectedClassInfo, IEnumerable<ClassDetailInfoModel> detailedInfos)
+		{
+			var allClassDetailedInfos  = detailedInfos.ToList();
+			if (detailedInfos is null) return "데이터가 없습니다.";
+			else								SaveAllData(allClassDetailedInfos);	
+
+			var receivedClassInfo	   = selectedClassInfo;
+			var selectedDetailedInfos  = allClassDetailedInfos.Where(o => o.ClassName.Equals(receivedClassInfo.ClassName)     is true).ToList();
+
+			var receivedBaseClassInfo  = baseClassInfo;
+			var baseClassDetailedInfos = allClassDetailedInfos.Where(o => o.ClassName.Equals(receivedBaseClassInfo.ClassName) is true).ToList();
+
+			var result = IsCompability(selectedDetailedInfos);
 			if (result != string.Empty)
 			{
 				return result;
 			}
 
-			ClassInfo = new ClassInfoModel()
+			if (IsDataEixst(receivedBaseClassInfo, baseClassDetailedInfos, receivedClassInfo, selectedDetailedInfos) is true)
 			{
-				SequenceNumber = classInfo.SequenceNumber,
-				AccessModifier = classInfo.AccessModifier.Trim(),
-				ClassType      = classInfo.ClassType.Trim(),
-				ClassName      = ToCodingStyle(classInfo.ClassName)
-			};
-
-			foreach (var classDetailInfo in classDetailInfos)
-			{
-				ClassDetailInfos.Add(new ClassDetailInfoModel()
-				{
-					AccessModifier = classDetailInfo.AccessModifier.Trim(),
-					MemberName = ToCodingStyle(classDetailInfo.MemberName),
-					MemberType = classDetailInfo.MemberType.Trim(),
-					DataType = classDetailInfo.DataType.Trim(),
-					Comment = classDetailInfo.Comment is null ? string.Empty : classDetailInfo.Comment.Trim()
-				});
+				InitializeSelectedClass(receivedClassInfo, selectedDetailedInfos);
+				InitializeBase(baseClassInfo, baseClassDetailedInfos);
+				InheritanceFlag = ParentOrChild(baseClassInfo, receivedClassInfo);
 			}
-
+			else
+			{
+				InitializeSelectedClass(receivedClassInfo, selectedDetailedInfos.ToList());
+				InheritanceFlag = Inheritance.None;
+			}
 			return string.Empty;
 		}
 
+		private void SaveAllData(List<ClassDetailInfoModel> detailedInfos)
+		{
+			AllClassDetailInfos.Clear();
+
+			foreach (var detailedInfo in detailedInfos)
+			{
+				AllClassDetailInfos.Add(new ClassDetailInfoModel()
+				{
+					ClassName		= detailedInfo.ClassName.Trim(),
+					AccessModifier = detailedInfo.AccessModifier.Trim(),
+					MemberName     = ToCodingStyle(detailedInfo.MemberName),
+					MemberType     = detailedInfo.MemberType.Trim(),
+					DataType       = detailedInfo.DataType.Trim(),
+					Comment        = detailedInfo.Comment is null ? string.Empty : detailedInfo.Comment.Trim()
+				});
+			}
+		}
+
+		// 완료	
 		public void    Reset()
 		{
 			ClassInfo = null;
 			ClassDetailInfos.Clear();
 			CodingTextResult.Clear();
 		}
-						   
+					   
 		public string  Result()
 		{
-			// 로그 데이터가 있으면 로그로 전달하자 
 			return CodingTextResult.ToString();
 		}
-						   
-		public void    StartText()
+
+		#region Start End Constructor Text
+		public  string StartText()
 		{
-			var text = string.Empty;
+			var errorResult          = string.Empty;
+			var startTextBuilder     = CodingTextResult;
 
+			var flag			          = InheritanceFlag;
+			var baseClassInfo 		 = BaseClassInfo;
+			
 			CodingTextResult.Append(string.Empty.PadRight(5));
-			if (string.Compare(ClassInfo.AccessModifier, "public", true) == 0)
+
+			switch (flag)
 			{
-				CodingTextResult.Append($"{ClassInfo.AccessModifier} " );
+				case Inheritance.None:   errorResult = WriteNoneStartText  (ref startTextBuilder,					 ClassInfo);	  break;
+				case Inheritance.Parent: errorResult = WriteParentStartText(ref startTextBuilder,					 ClassInfo);     break;
+				case Inheritance.Child:  errorResult = WriteChildStartText (ref startTextBuilder, baseClassInfo, ClassInfo);	  break;
 			}
 
-			if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeDefault, true) == 0)
-			{
-				CodingTextResult.AppendLine($"class {ClassInfo.ClassName}");
-			}
-			else
-			{
-				CodingTextResult.AppendLine($"{ClassInfo.ClassType} class {ClassInfo.ClassName}");
-			}
-
-			CodingTextResult.AppendLine(string.Empty.PadRight(5) + "{");
+			startTextBuilder.AppendLine(string.Empty.PadRight(5) + "{");
+			return errorResult;
 		}
-						   
-		public void    EndText()
+
+		public  void   EndText()
 		{
 			var text = string.Empty.PadRight(5) + "}";
 			CodingTextResult.AppendLine(text);
 			CodingTextResult.AppendLine();
-			CodingTextResult.AppendLine();
-			CodingTextResult.AppendLine();
 		}
-						   
-		public string  ConstructorText()
+
+		private string WriteChildStartText(ref StringBuilder startTextBuilder, ClassInfoModel baseClassInfo, ClassInfoModel classInfo)
 		{
-			var result = string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0 ? true : false;
-			if (result is false)
+			if (BaseClassInfo.AccessModifier.Equals("public") is true)
 			{
-				CodingTextResult.AppendLine( string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"public {ClassInfo.ClassName}()");
-				CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "{");
-				CodingTextResult.AppendLine();
-				CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "}");
-				CodingTextResult.AppendLine();
+				startTextBuilder.Append($"{ClassInfo.AccessModifier} ");
 			}
+			else if (ClassInfo.AccessModifier.Equals("public") is false)
+			{
+				startTextBuilder.Append($"{ClassInfo.AccessModifier} ");
+			}
+			else
+			{
+				return "상속한 클래스 한정자가 public이 아닙니다";
+			}
+
+			if (ClassInfo.ClassType.Equals(Constants.ClassTypeDefault) is false)
+			{
+				startTextBuilder.Append($"{ClassInfo.ClassType} ");
+			}
+
+			if (baseClassInfo.ClassType.Equals(Constants.ClassTypeStatic) is false &&
+				 baseClassInfo.ClassType.Equals(ClassTypeSealed) is false &&
+				 baseClassInfo.ClassName.Equals(classInfo.ClassName) is false)
+			{
+				startTextBuilder.AppendLine($"class {ClassInfo.ClassName} : {baseClassInfo.ClassName}");
+			}
+			else
+			{
+				startTextBuilder.AppendLine($"class {ClassInfo.ClassName}");
+			}
+
 			return string.Empty;
 		}
-						   
+
+		private string WriteParentStartText(ref StringBuilder startTextBuilder, ClassInfoModel baseClassInfo)
+		{
+			if (baseClassInfo.AccessModifier.Equals("public") is true)
+			{
+				startTextBuilder.Append($"{BaseClassInfo.AccessModifier} ");
+			}
+
+			// class Type
+			if (ClassInfo.ClassType.Equals(Constants.ClassTypeDefault) is false)
+			{
+				startTextBuilder.Append($"{ClassInfo.ClassType} ");
+			}
+
+			startTextBuilder.AppendLine($"class {ClassInfo.ClassName}");
+
+			return string.Empty;
+		}
+
+		private string WriteNoneStartText(ref StringBuilder startTextBuilder, ClassInfoModel classInfo)
+		{
+			startTextBuilder.Append($"{ClassInfo.AccessModifier} ");
+
+			if (ClassInfo.ClassType.Equals(Constants.ClassTypeDefault) is false)
+			{
+				startTextBuilder.Append($"{ClassInfo.ClassType} ");
+			}
+			startTextBuilder.AppendLine($"class {ClassInfo.ClassName}");
+			return string.Empty;
+		}
+
+		public  string ConstructorText()
+		{
+			if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
+			{
+				return string.Empty;
+			}
+			
+			CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"public {ClassInfo.ClassName}()");
+			CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "{");
+			CodingTextResult.AppendLine();
+			CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "}");
+			CodingTextResult.AppendLine();
+			return string.Empty;
+		}
+		#endregion
+
+		#region FieldsText
+		public const string DataTypeVoid = "void";
+		public static string MessageThisTypeIsNotVoidType(string memberName) =>  $"void :{memberName}가 Method Type이 아닙니다.";
+
 		public string  FieldsText()
 		{
-			var errorResult = string.Empty;
-			var fields = ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.Field, true) == 0);
+			var errorResult			 = string.Empty;
+			var fieldsTextBuilder    = CodingTextResult;
+			var flag						 = InheritanceFlag;
+			var baseClassDetailInfos = BaseClassDetailInfos;
+			var selectedClassInfo    = ClassInfo;
+			var fields		          = ClassDetailInfos.Where(o => o.MemberType.ToLower().Equals(Constants.Field) is true);			 
+			var voidOrNull				 = VoidType(fields); 
 
 			if (IsExist(fields) is false) return string.Empty;
 
+			if (voidOrNull      != null ) return MessageThisTypeIsNotVoidType(voidOrNull.MemberName); 
+
+			switch (flag)
+			{
+				case Inheritance.None	: errorResult = WriteFieldsText		 (ref fieldsTextBuilder,							  fields); break;
+				case Inheritance.Parent : errorResult = WriteParentFieldsText(ref fieldsTextBuilder, selectedClassInfo   , fields); break; 
+				case Inheritance.Child  : errorResult = WriteChildFieldsText (ref fieldsTextBuilder, baseClassDetailInfos, fields); break;
+			}
+
+			return errorResult;
+		}
+
+		private string WriteFieldsText		(ref StringBuilder fieldsTextBuilder, IEnumerable<ClassDetailInfoModel> fields)
+		{
 			foreach (var classDetailInfo in fields)
 			{
-				// void 검사
-				if (string.Compare(classDetailInfo.DataType, "void", true) == 0)
+				WriteFieldText(ref fieldsTextBuilder, classDetailInfo);				
+			}
+			fieldsTextBuilder.AppendLine();
+			return string.Empty;
+		}
+
+		private string WriteChildFieldsText	(ref  StringBuilder                    fieldsTextBuilder    ,
+															  IEnumerable<ClassDetailInfoModel> baseClassDetailInfos ,
+															  IEnumerable<ClassDetailInfoModel> fields					)
+		{
+			foreach (var classDetailInfo in fields)
+			{
+				fieldsTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount)
+					+ $"{classDetailInfo.AccessModifier} ");
+	
+				fieldsTextBuilder.Append($"{classDetailInfo.DataType} _{FirstCharToLower(classDetailInfo.MemberName)};");
+
+				if (classDetailInfo.Comment != string.Empty)
 				{
-					errorResult = $"void :{classDetailInfo.MemberName}가 Method Type이 아닙니다.";
-					return errorResult;
+					fieldsTextBuilder.Append($" //{classDetailInfo.Comment} ");
 				}
 
-				if (string.Compare(ClassInfo.AccessModifier, "public", true) == 0)
+				var flag = false;
+				foreach (var baseClassDetailInfo in baseClassDetailInfos)
 				{
-					CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
-				}
-				else
-				{
-					CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"private ");
-				}
-
-				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
-				{
-					CodingTextResult.Append($"{ClassInfo.ClassType} ");
+					if (classDetailInfo.MemberName.Equals(baseClassDetailInfo.MemberName))
+					{
+						flag = true;
+						fieldsTextBuilder.AppendLine("<use parent class>");
+						break;
+					}
 				}
 
-				CodingTextResult.Append($"{classDetailInfo.DataType}  _{FirstCharToLower(classDetailInfo.MemberName)};");
-
-				// Comment 검사
-				if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
+				if(flag is false)
 				{
-					CodingTextResult.AppendLine($"  // {classDetailInfo.Comment}");
+					fieldsTextBuilder.AppendLine();
 				}
-				else
+			}
+			fieldsTextBuilder.AppendLine();
+			return string.Empty;
+		}
+
+		private string WriteParentFieldsText(ref StringBuilder						   fieldsTextBuilder    , 
+															  ClassInfoModel						   selectedClassInfo    , 
+															  IEnumerable<ClassDetailInfoModel> fields				   )
+		{
+			var allClassDetailInfos = AllClassDetailInfos.Where(o => o.ClassName.Equals(BaseClassInfo.ClassName) is false);
+
+			foreach(var ClassDetailInfo in fields)
+			{
+				fieldsTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) 
+					+ $"{ClassDetailInfo.AccessModifier} ");
+
+				fieldsTextBuilder.Append($"{ClassDetailInfo.DataType} _{FirstCharToLower(ClassDetailInfo.MemberName)};");
+
+				if (ClassDetailInfo.Comment != string.Empty)
 				{
-					CodingTextResult.AppendLine();
+					fieldsTextBuilder.Append($" //{ClassDetailInfo.Comment} ");
+				}
+
+				var flag = false;
+				foreach (var allClassDetailInfo in allClassDetailInfos)
+				{
+					if (ClassDetailInfo.MemberName.Equals(allClassDetailInfo.MemberName))
+					{
+						flag = true;
+						fieldsTextBuilder.AppendLine("<use child class>");
+						break;
+					}
+				}
+
+				if (flag is false)
+				{
+					fieldsTextBuilder.AppendLine();
 				}
 			}
 
-			CodingTextResult.AppendLine();
+			fieldsTextBuilder.AppendLine();
 			return string.Empty;
 		}
-						   
-		public string  PropertiesText()
+
+		private void   WriteFieldText			(ref StringBuilder fieldTextBuilder, ClassDetailInfoModel classDetailInfo)
 		{
-			var errorResult = string.Empty;
-			var Properties = ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.Property, true) == 0);
+			fieldTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount)
+				+ $"{classDetailInfo.AccessModifier} {classDetailInfo.DataType} _{FirstCharToLower(classDetailInfo.MemberName)};");
+
+			if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
+			{
+				fieldTextBuilder.AppendLine($" // {classDetailInfo.Comment}");
+			}
+			else
+			{
+				fieldTextBuilder.AppendLine();
+			}
+		}
+		#endregion
+
+		#region PropertiesText
+
+		public  string PropertiesText()
+		{
+			var errorResult		     = string.Empty;
+			var propertiesTextBuilder = CodingTextResult;
+			var flag						  = InheritanceFlag;
+			var baseClassDetailInfos  = BaseClassDetailInfos;
+			var selectedClassInfo     = ClassInfo;
+			var Properties				  = ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.Property, true) == 0);
+			var voidOrNull				  = VoidType(Properties); 
 
 			if (IsExist(Properties) is false) return string.Empty;
 
-			foreach (var classDetailInfo in Properties)
-			{
-				// void 검사
-				if (string.Compare(classDetailInfo.DataType, "void", true) == 0)
-				{
-					errorResult = $"void :{classDetailInfo.MemberName}가 Method Type이 아닙니다.";
-					return errorResult;
-				}
+			if (voidOrNull			   != null ) return MessageThisTypeIsNotVoidType(voidOrNull.MemberName);
 
-				if (string.Compare(ClassInfo.AccessModifier, "public", true) == 0)
-				{
-					CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
-				}
-				else
-				{
-					CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"private ");
-				}
+			switch (flag)
+			{
+				case Inheritance.None  : errorResult = WritePropertiesText		 (ref propertiesTextBuilder,							   Properties); break;
+				case Inheritance.Parent: errorResult = WriteParentPropertiesText(ref propertiesTextBuilder, selectedClassInfo   , Properties); break;
+				case Inheritance.Child : errorResult = WriteChildPropertiesText (ref propertiesTextBuilder, baseClassDetailInfos, Properties); break;
+			}
+
+			propertiesTextBuilder.AppendLine();
+			return errorResult;
+		}
+
+		public const string ClassTypeAbstract = "abstract";
+		private string WritePropertiesText		 (ref StringBuilder propertiesTextBuilder, IEnumerable<ClassDetailInfoModel> properties)
+		{
+			foreach (var classDetailInfo in properties)
+			{
+				propertiesTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
 
 				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
 				{
-					CodingTextResult.Append($"{ClassInfo.ClassType} ");
+					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
+				}
+				else if (string.Compare(ClassInfo.ClassType, ClassTypeAbstract, true) == 0)
+				{
+					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
 				}
 
-				CodingTextResult.Append($"{classDetailInfo.DataType} {classDetailInfo.MemberName} ");
-				CodingTextResult.Append("{ ");
-				CodingTextResult.Append("get; set;");
-				CodingTextResult.Append(" }");
+				propertiesTextBuilder.Append($"{classDetailInfo.DataType} {classDetailInfo.MemberName} ");
+				propertiesTextBuilder.Append("{ ");
+				propertiesTextBuilder.Append("get; set;");
+				propertiesTextBuilder.Append(" }");
 
 				// Comment 검사
 				if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
 				{
-					CodingTextResult.AppendLine($"  // {classDetailInfo.Comment}");
+					propertiesTextBuilder.AppendLine($"  // {classDetailInfo.Comment}");
 				}
 				else
 				{
-					CodingTextResult.AppendLine();
+					propertiesTextBuilder.AppendLine();
 				}
 			}
-			CodingTextResult.AppendLine();
+
+			propertiesTextBuilder.AppendLine();
 			return string.Empty;
 		}
-						   
-		public string  MethodsText()
+															 
+		private string WriteChildPropertiesText (ref StringBuilder							propertiesTextBuilder , 
+																   List<ClassDetailInfoModel>			baseClassDetailInfos  ,
+																   IEnumerable<ClassDetailInfoModel> properties				 )
 		{
-			var errorResult = string.Empty;
-			var Methods = ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.Method, true) == 0);
+			// 타입 
+			foreach (var classDetailInfo in properties)
+			{
+				propertiesTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
+
+				// ClassInfo
+				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
+				{
+					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
+				}
+				else if (string.Compare(ClassInfo.ClassType, ClassTypeAbstract, true) == 0)
+				{
+					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
+				}
+				else
+				{
+					foreach (var baseClassDetailInfo in baseClassDetailInfos)
+					{
+						if (classDetailInfo.MemberName.Equals(baseClassDetailInfo.MemberName))
+						{
+							if(classDetailInfo.MemberType.Equals(baseClassDetailInfo.MemberType) is true)
+							{
+								propertiesTextBuilder.Append("ovrride ");
+							}
+							else
+							{
+								return $"base class의 {classDetailInfo.MemberName}(와)과 타입이 다릅니다.";
+							}
+							break;
+						}
+					}
+				}
+
+				propertiesTextBuilder.Append($"{classDetailInfo.DataType} {classDetailInfo.MemberName} ");
+				propertiesTextBuilder.Append("{ ");
+				propertiesTextBuilder.Append("get; set;");
+				propertiesTextBuilder.Append(" }");
+
+				// Comment 검사
+				if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
+				{
+					propertiesTextBuilder.AppendLine($"  // {classDetailInfo.Comment}");
+				}
+				else
+				{
+					propertiesTextBuilder.AppendLine();
+				}
+			}
+
+			return string.Empty;
+		}
+
+		private string WriteParentPropertiesText(ref StringBuilder							 propertiesTextBuilder , 
+																	ClassInfoModel							 selectedClassInfo	  , 
+																	IEnumerable<ClassDetailInfoModel> properties				  )
+		{
+			var allClassDetailInfos = AllClassDetailInfos.Where(o => o.ClassName.Equals(BaseClassInfo.ClassName) is false);
+
+			foreach (var classDetailInfo in properties)
+			{
+				propertiesTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
+
+				// ClassInfo
+				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
+				{
+					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
+				}
+				else if (string.Compare(ClassInfo.ClassType, ClassTypeAbstract, true) == 0)
+				{
+					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
+				}
+				else
+				{
+					foreach (var allClassDetailInfo in allClassDetailInfos)
+					{
+						if (classDetailInfo.MemberName.Equals(allClassDetailInfo.MemberName))
+						{
+							propertiesTextBuilder.Append("virtual ");
+							break;
+						}
+					}
+				}
+
+				propertiesTextBuilder.Append($"{classDetailInfo.DataType} {classDetailInfo.MemberName} ");
+				propertiesTextBuilder.Append("{ ");
+				propertiesTextBuilder.Append("get; set;");
+				propertiesTextBuilder.Append(" }");
+
+				// Comment 검사
+				if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
+				{
+					propertiesTextBuilder.AppendLine($"  // {classDetailInfo.Comment}");
+				}
+				else
+				{
+					propertiesTextBuilder.AppendLine();
+				}
+			}
+
+			return string.Empty;
+		}
+		#endregion
+
+		#region MethodsText
+
+		public string MethodsText()
+		{
+			var errorResult		    = string.Empty;
+			var methodsTextBuilder   = CodingTextResult;
+			var flag					    = InheritanceFlag;
+			var baseClassDetailInfos = BaseClassDetailInfos;
+			var selectedClassInfo    = ClassInfo;
+			var Methods				    = ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.Method, true) == 0);
 
 			if (IsExist(Methods) is false) return string.Empty;
 
-			foreach (var classDetailInfo in ClassDetailInfos.Where(o => string.Compare(o.MemberType, Constants.Method, true) == 0))
+			switch (flag)
 			{
-				if (string.Compare(ClassInfo.AccessModifier, "public", true) == 0)
-				{
-					CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
-				}
-				else
-				{
-					CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"private ");
-				}
+				case Inheritance.None  : errorResult = WriteMethodsText			  (ref methodsTextBuilder, Methods);  break;
+				case Inheritance.Parent: errorResult = WriteBaseParentMethodsText(ref methodsTextBuilder, selectedClassInfo,  Methods);  break;
+				case Inheritance.Child : errorResult = WriteBaseChildMethodsText (ref methodsTextBuilder, baseClassDetailInfos, Methods);  break;
+			}
 
+			return errorResult;
+		}
+
+		private string WriteBaseChildMethodsText(ref StringBuilder                     methodsTextBuilder	 , 
+																	List<ClassDetailInfoModel>        baseClassDetailInfos , 
+																	IEnumerable<ClassDetailInfoModel> methods					 )
+		{
+			throw new NotImplementedException();
+		}
+
+		private string WriteBaseParentMethodsText(ref StringBuilder							  methodsTextBuilder , 
+																	 ClassInfoModel						  selectedClassInfo  , 
+																	 IEnumerable<ClassDetailInfoModel> methods			   )
+		{
+			throw new NotImplementedException();
+		}
+
+		private string WriteMethodsText(ref StringBuilder methodsTextBuilder, IEnumerable<ClassDetailInfoModel> methods)
+		{
+			foreach(var classDetailInfo in methods)
+			{
+				methodsTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
+				
 				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
 				{
-					CodingTextResult.Append($"{ClassInfo.ClassType} ");
+					methodsTextBuilder.Append($"{ClassInfo.ClassType} ");
 				}
 
-				CodingTextResult.AppendLine($"{classDetailInfo.DataType} {classDetailInfo.MemberName}()");
-				CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "{");
+				// override
+				// 여기서 가져와서 
+				methodsTextBuilder.AppendLine($"{classDetailInfo.DataType} {classDetailInfo.MemberName}()");
+				methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "{");
 
 				// void 검사
-				if (string.Compare(classDetailInfo.DataType, "void", true) == 0)
+				if (string.Compare(classDetailInfo.DataType, DataTypeVoid, true) == 0)
 				{
-					CodingTextResult.AppendLine();
+					methodsTextBuilder.AppendLine();
 				}
 				else
 				{
@@ -249,35 +589,42 @@ namespace Modules.CsvFile.Convert
 						}
 					}
 
+					// override면 다르게 해야대
+
 					if (flag is false)
 					{
-						CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"var obj = new {classDetailInfo.DataType}();");
-						CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
+						methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"var obj = new {classDetailInfo.DataType}();");
+						methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
 					}
 					else
 					{
-						CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"{classDetailInfo.DataType} obj; // {classDetailInfo.DataType}에 맞는 value 설정할 것");
-						CodingTextResult.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
+						methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"{classDetailInfo.DataType} obj; // {classDetailInfo.DataType}에 맞는 value 설정할 것");
+						methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
 					}
 				}
 
-				CodingTextResult.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "}");
+				methodsTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "}");
 
 				// Comment 검사
 				if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
 				{
-					CodingTextResult.AppendLine($"  // {classDetailInfo.Comment}");
-					CodingTextResult.AppendLine();
+					methodsTextBuilder.AppendLine($" // {classDetailInfo.Comment}");
+					methodsTextBuilder.AppendLine();
 				}
 				else
 				{
-					CodingTextResult.AppendLine();
-					CodingTextResult.AppendLine();
+					methodsTextBuilder.AppendLine();
+					methodsTextBuilder.AppendLine();
 				}
+
+				methodsTextBuilder.AppendLine();
 			}
+
 			return string.Empty;
 		}
-						   
+
+		#endregion
+
 		public string  ConstantsText()
 		{
 			var errorResult = string.Empty;
@@ -330,7 +677,7 @@ namespace Modules.CsvFile.Convert
 			return string.Empty;
 		}
 
-		private string ToCodingStyle(string memberName)
+		public string  ToCodingStyle(string memberName)
 		{
 			var result = memberName.Trim();
 
@@ -381,9 +728,11 @@ namespace Modules.CsvFile.Convert
 			return string.Empty;
 		}
 
+		public const string SpecialText = @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";
+		public static string MessageMemberHaveSpecialText(string member) => $"{member}에 특수문자가 들어갔습니다. 제외특수문자 : " + @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";
 		private string ResultOfSpacialText(IEnumerable<ClassDetailInfoModel> classDetailInfos)
 		{
-			string str = @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";
+			string str = SpecialText;
 
 			foreach (var classDetailInfo in classDetailInfos)
 			{
@@ -391,7 +740,7 @@ namespace Modules.CsvFile.Convert
 				var result = rex.IsMatch(classDetailInfo.MemberName);
 
 				if (result is true)
-					return $"{classDetailInfo.MemberName}에 특수문자가 들어갔습니다. 제외특수문자 : " + @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";
+					return MessageMemberHaveSpecialText(classDetailInfo.MemberName);
 			}
 			return string.Empty;
 		}
@@ -450,11 +799,88 @@ namespace Modules.CsvFile.Convert
 			return true;
 		}
 
-		private string GetResultOfRemovingSpacialText(string result) => Regex.Replace(result, @"[^a-zA-Z0-9가-힣_]", "", RegexOptions.Singleline);
+		private bool   IsDataEixst(ClassInfoModel baseClassInfo, List<ClassDetailInfoModel> baseClassDetailInfos, ClassInfoModel classInfo, List<ClassDetailInfoModel> classDetailInfos)
+		{
+			if(classInfo	  != null			   &&
+				baseClassInfo != null		      &&
+				classDetailInfos.Count       > 0 &&					 
+				baseClassDetailInfos.Count   > 0  )
+			{
+				ClassInfo = null;
+				ClassDetailInfos.Clear();
+				BaseClassInfo = null;
+				BaseClassDetailInfos.Clear();
 
-		private string FirstCharToUpper(string input) => input.First().ToString().ToUpper() + input.Substring(1);
+				return true;
+			}
+			else if (classInfo != null && classDetailInfos.Count > 0)
+			{
+				ClassInfo = null;
+				ClassDetailInfos.Clear();
+				return false;
+			}	
+			return false;
+		}
 
-		private string FirstCharToLower(string input) => input.First().ToString().ToLower() + input.Substring(1);
+		public const string ClassTypeSealed = "sealed";
+
+		private string InitializeSelectedClass(ClassInfoModel classInfo,     List<ClassDetailInfoModel> classDetailInfos)
+		{
+			ClassInfo = new ClassInfoModel()
+			{
+				SequenceNumber = classInfo.SequenceNumber,
+				AccessModifier = classInfo.AccessModifier.Trim(),
+				ClassType = classInfo.ClassType.Trim(),
+				ClassName = ToCodingStyle(classInfo.ClassName)
+			};
+
+			foreach (var classDetailInfo in classDetailInfos)
+			{
+				ClassDetailInfos.Add(new ClassDetailInfoModel()
+				{
+					AccessModifier = classDetailInfo.AccessModifier.Trim(),
+					MemberName = ToCodingStyle(classDetailInfo.MemberName),
+					MemberType = classDetailInfo.MemberType.Trim(),
+					DataType = classDetailInfo.DataType.Trim(),
+					Comment = classDetailInfo.Comment is null ? string.Empty : classDetailInfo.Comment.Trim()
+				});
+			}
+			return string.Empty;
+		}
+
+		private string InitializeBase			  (ClassInfoModel baseClassInfo, List<ClassDetailInfoModel> baseClassDetailInfos)
+		{		
+			BaseClassInfo = new ClassInfoModel()
+			{
+				SequenceNumber = baseClassInfo.SequenceNumber,
+				AccessModifier = baseClassInfo.AccessModifier.Trim(),
+				ClassType = baseClassInfo.ClassType.Trim(),
+				ClassName = ToCodingStyle(baseClassInfo.ClassName.Trim())
+			};
+
+			foreach (var baseClassDetailInfo in baseClassDetailInfos)
+			{
+				BaseClassDetailInfos.Add(new ClassDetailInfoModel()
+				{
+					ClassName = baseClassDetailInfo.ClassName.Trim(),
+					AccessModifier = baseClassDetailInfo.AccessModifier.Trim(),
+					MemberName = baseClassDetailInfo.MemberName.Trim(),
+					MemberType = ToCodingStyle(baseClassDetailInfo.MemberType.Trim()),
+					DataType = baseClassDetailInfo.DataType.Trim(),
+					Comment = baseClassDetailInfo.Comment is null ? string.Empty : baseClassDetailInfo.Comment.Trim()				   
+				});
+			}
+
+			return string.Empty;
+		}
+
+		private ClassDetailInfoModel VoidType(IEnumerable<ClassDetailInfoModel> membertypes) => membertypes.Where(o => o.DataType.Equals("void") is true).FirstOrDefault();
+
+		private string GetResultOfRemovingSpacialText(string result)								 => Regex.Replace(result, @"[^a-zA-Z0-9가-힣_]", "", RegexOptions.Singleline);
+																														 
+		private string FirstCharToUpper(string input)													 => input.First().ToString().ToUpper() + input.Substring(1);
+																														 
+		private string FirstCharToLower(string input)													 => input.First().ToString().ToLower() + input.Substring(1);
 
 	}
 }

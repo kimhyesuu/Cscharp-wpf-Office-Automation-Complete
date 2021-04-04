@@ -14,6 +14,7 @@
 		  WindowStartupLocation = "CenterScreen"
         WindowStyle			   = "ToolWindow"
         ResizeMode			   = "NoResize" 
+		  Background="#F2F1F0"
 		  Height="1020" 
 		  Width ="1700">
 
