@@ -8,7 +8,11 @@
 		public const string DataTypeDefault				= "int";
 		public const string MemberTypeDefault			= "field";
 		public const string ClassTypeDefault			= "none";
+		public const string ClassTypeSealed				= "sealed";
 		public const string ClassTypeStatic			   = "static";
+		public const string ClassTypeAbstract			= "abstract";
+		public const string DataTypeVoid					= "void";
+
 		public const string Method							= "method";
 		public const string Field							= "field";
 		public const string Property						= "property";
@@ -17,5 +21,8 @@
 		public const string TXT								= ".txt";
 
 		public const char	  Comma						   = ',';
+
+		public const string SpecialText					= @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";
+
 	}
 }

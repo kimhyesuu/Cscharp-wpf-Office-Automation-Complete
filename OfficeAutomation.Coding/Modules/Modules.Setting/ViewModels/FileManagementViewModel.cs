@@ -123,7 +123,7 @@ namespace Modules.Setting.ViewModels
 				FileManager.WriteTXT(text.ToString());
 			}
 
-			Message.InfoMessage("성공적으로 저장했습니다.");
+			Message.InfoOKMessage("성공적으로 저장했습니다.");
 		}
 	}
 }

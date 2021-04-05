@@ -17,17 +17,22 @@ namespace Modules.CsvFile.Convert
 
 	public class ConvertTo
 	{
+		#region field 
 		private const int spaceCount = 4;
+		#endregion
 
-		private  Inheritance				         InheritanceFlag		{ get; set; }
-		private  ClassInfoModel			         BaseClassInfo		   { get; set; }
-		private	ClassInfoModel			         ClassInfo			   { get; set; }
+		#region properties
+		private Inheritance				      InheritanceFlag		{ get; set; }
+		private  ClassInfoModel			      BaseClassInfo		   { get; set; }
+		private	ClassInfoModel			      ClassInfo			   { get; set; }
 
-		private  List<ClassDetailInfoModel>    AllClassDetailInfos  { get; set; }
-		private  List<ClassDetailInfoModel>    BaseClassDetailInfos { get; set; }
-		private  List<ClassDetailInfoModel>    ClassDetailInfos     { get; set; }
-		private  StringBuilder					   CodingTextResult	   { get;      }
+		private  List<ClassDetailInfoModel> AllClassDetailInfos  { get; set; }
+		private  List<ClassDetailInfoModel> BaseClassDetailInfos { get; set; }
+		private  List<ClassDetailInfoModel> ClassDetailInfos     { get; set; }
+		private  StringBuilder					CodingTextResult	   { get;      }
+		#endregion
 
+		#region Constructor
 		public ConvertTo()
 		{
 			ClassDetailInfos	   = new List<ClassDetailInfoModel>();
@@ -35,23 +40,15 @@ namespace Modules.CsvFile.Convert
 			BaseClassDetailInfos = new List<ClassDetailInfoModel>();
 			CodingTextResult	   = new StringBuilder();
 		}
+		#endregion
 
-		private Inheritance ParentOrChild(ClassInfoModel baseClassInfo, ClassInfoModel classInfo)
-		{
-			if (baseClassInfo.ClassType.Equals(Constants.ClassTypeStatic) is false &&
-			    baseClassInfo.ClassType.Equals(ClassTypeSealed)			  is false &&
-				 baseClassInfo.ClassName.Equals(classInfo.ClassName)		  is true)
-			{
-				return Inheritance.Parent;
-			}		
-				return Inheritance.Child;
-		}
+		#region public Methods
 
-		// 완료
+		#region Initialize, Reset, Result
 		internal string Initialize(ClassInfoModel baseClassInfo, ClassInfoModel selectedClassInfo, IEnumerable<ClassDetailInfoModel> detailedInfos)
 		{
 			var allClassDetailedInfos  = detailedInfos.ToList();
-			if (detailedInfos is null) return "데이터가 없습니다.";
+			if (detailedInfos is null) return Message.ClassDetailInfosNotData;
 			else								SaveAllData(allClassDetailedInfos);	
 
 			var receivedClassInfo	   = selectedClassInfo;
@@ -80,25 +77,6 @@ namespace Modules.CsvFile.Convert
 			return string.Empty;
 		}
 
-		private void SaveAllData(List<ClassDetailInfoModel> detailedInfos)
-		{
-			AllClassDetailInfos.Clear();
-
-			foreach (var detailedInfo in detailedInfos)
-			{
-				AllClassDetailInfos.Add(new ClassDetailInfoModel()
-				{
-					ClassName		= detailedInfo.ClassName.Trim(),
-					AccessModifier = detailedInfo.AccessModifier.Trim(),
-					MemberName     = ToCodingStyle(detailedInfo.MemberName),
-					MemberType     = detailedInfo.MemberType.Trim(),
-					DataType       = detailedInfo.DataType.Trim(),
-					Comment        = detailedInfo.Comment is null ? string.Empty : detailedInfo.Comment.Trim()
-				});
-			}
-		}
-
-		// 완료	
 		public void    Reset()
 		{
 			ClassInfo = null;
@@ -110,9 +88,10 @@ namespace Modules.CsvFile.Convert
 		{
 			return CodingTextResult.ToString();
 		}
+		#endregion
 
-		#region Start End Constructor Text
-		public  string StartText()
+		#region Start, End, Constructor
+		public string StartText()
 		{
 			var errorResult          = string.Empty;
 			var startTextBuilder     = CodingTextResult;
@@ -152,7 +131,7 @@ namespace Modules.CsvFile.Convert
 			}
 			else
 			{
-				return "상속한 클래스 한정자가 public이 아닙니다";
+				return Message.BaseClassIsNotPublicAccessModifier;
 			}
 
 			if (ClassInfo.ClassType.Equals(Constants.ClassTypeDefault) is false)
@@ -161,7 +140,7 @@ namespace Modules.CsvFile.Convert
 			}
 
 			if (baseClassInfo.ClassType.Equals(Constants.ClassTypeStatic) is false &&
-				 baseClassInfo.ClassType.Equals(ClassTypeSealed) is false &&
+				 baseClassInfo.ClassType.Equals(Constants.ClassTypeSealed) is false &&
 				 baseClassInfo.ClassName.Equals(classInfo.ClassName) is false)
 			{
 				startTextBuilder.AppendLine($"class {ClassInfo.ClassName} : {baseClassInfo.ClassName}");
@@ -221,8 +200,6 @@ namespace Modules.CsvFile.Convert
 		#endregion
 
 		#region FieldsText
-		public const string DataTypeVoid = "void";
-		public static string MessageThisTypeIsNotVoidType(string memberName) =>  $"void :{memberName}가 Method Type이 아닙니다.";
 
 		public string  FieldsText()
 		{
@@ -236,7 +213,7 @@ namespace Modules.CsvFile.Convert
 
 			if (IsExist(fields) is false) return string.Empty;
 
-			if (voidOrNull      != null ) return MessageThisTypeIsNotVoidType(voidOrNull.MemberName); 
+			if (voidOrNull      != null ) return Message.ThisMemberTypeIsNotVoidType(voidOrNull.MemberName); 
 
 			switch (flag)
 			{
@@ -277,11 +254,18 @@ namespace Modules.CsvFile.Convert
 				var flag = false;
 				foreach (var baseClassDetailInfo in baseClassDetailInfos)
 				{
-					if (classDetailInfo.MemberName.Equals(baseClassDetailInfo.MemberName))
+					if (classDetailInfo.MemberName.Equals(ToCodingStyle(baseClassDetailInfo.MemberName)))
 					{
-						flag = true;
-						fieldsTextBuilder.AppendLine("<use parent class>");
-						break;
+						if (classDetailInfo.MemberType.Equals(baseClassDetailInfo.MemberType.ToLower()) is true)
+						{
+							flag = true;
+							fieldsTextBuilder.AppendLine("<use parent class>");
+							break;
+						}
+						else
+						{
+							return Message.DifferentMemberType(classDetailInfo.MemberName, classDetailInfo.MemberName, classDetailInfo.ClassName);
+						}
 					}
 				}
 
@@ -350,7 +334,6 @@ namespace Modules.CsvFile.Convert
 		#endregion
 
 		#region PropertiesText
-
 		public  string PropertiesText()
 		{
 			var errorResult		     = string.Empty;
@@ -363,7 +346,7 @@ namespace Modules.CsvFile.Convert
 
 			if (IsExist(Properties) is false) return string.Empty;
 
-			if (voidOrNull			   != null ) return MessageThisTypeIsNotVoidType(voidOrNull.MemberName);
+			if (voidOrNull			   != null ) return Message.ThisMemberTypeIsNotVoidType(voidOrNull.MemberName);
 
 			switch (flag)
 			{
@@ -376,7 +359,6 @@ namespace Modules.CsvFile.Convert
 			return errorResult;
 		}
 
-		public const string ClassTypeAbstract = "abstract";
 		private string WritePropertiesText		 (ref StringBuilder propertiesTextBuilder, IEnumerable<ClassDetailInfoModel> properties)
 		{
 			foreach (var classDetailInfo in properties)
@@ -387,7 +369,7 @@ namespace Modules.CsvFile.Convert
 				{
 					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
 				}
-				else if (string.Compare(ClassInfo.ClassType, ClassTypeAbstract, true) == 0)
+				else if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeAbstract, true) == 0)
 				{
 					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
 				}
@@ -426,7 +408,7 @@ namespace Modules.CsvFile.Convert
 				{
 					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
 				}
-				else if (string.Compare(ClassInfo.ClassType, ClassTypeAbstract, true) == 0)
+				else if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeAbstract, true) == 0)
 				{
 					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
 				}
@@ -434,7 +416,7 @@ namespace Modules.CsvFile.Convert
 				{
 					foreach (var baseClassDetailInfo in baseClassDetailInfos)
 					{
-						if (classDetailInfo.MemberName.Equals(baseClassDetailInfo.MemberName))
+						if (classDetailInfo.MemberName.Equals(ToCodingStyle(baseClassDetailInfo.MemberName)))
 						{
 							if(classDetailInfo.MemberType.Equals(baseClassDetailInfo.MemberType) is true)
 							{
@@ -442,7 +424,7 @@ namespace Modules.CsvFile.Convert
 							}
 							else
 							{
-								return $"base class의 {classDetailInfo.MemberName}(와)과 타입이 다릅니다.";
+								return Message.DifferentMemberType(classDetailInfo.MemberName, classDetailInfo.MemberName, classDetailInfo.ClassName); 
 							}
 							break;
 						}
@@ -479,11 +461,11 @@ namespace Modules.CsvFile.Convert
 				propertiesTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
 
 				// ClassInfo
-				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
-				{
-					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
-				}
-				else if (string.Compare(ClassInfo.ClassType, ClassTypeAbstract, true) == 0)
+				//if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
+				//{
+				//	propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
+				//}
+				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeAbstract, true) == 0)
 				{
 					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
 				}
@@ -520,7 +502,6 @@ namespace Modules.CsvFile.Convert
 		#endregion
 
 		#region MethodsText
-
 		public string MethodsText()
 		{
 			var errorResult		    = string.Empty;
@@ -534,26 +515,199 @@ namespace Modules.CsvFile.Convert
 
 			switch (flag)
 			{
-				case Inheritance.None  : errorResult = WriteMethodsText			  (ref methodsTextBuilder, Methods);  break;
-				case Inheritance.Parent: errorResult = WriteBaseParentMethodsText(ref methodsTextBuilder, selectedClassInfo,  Methods);  break;
+				case Inheritance.None  : errorResult = WriteMethodsText			  (ref methodsTextBuilder,								 Methods);  break;
+				case Inheritance.Parent: errorResult = WriteBaseParentMethodsText(ref methodsTextBuilder, selectedClassInfo   , Methods);  break;
 				case Inheritance.Child : errorResult = WriteBaseChildMethodsText (ref methodsTextBuilder, baseClassDetailInfos, Methods);  break;
 			}
 
 			return errorResult;
 		}
+		
+
 
 		private string WriteBaseChildMethodsText(ref StringBuilder                     methodsTextBuilder	 , 
 																	List<ClassDetailInfoModel>        baseClassDetailInfos , 
 																	IEnumerable<ClassDetailInfoModel> methods					 )
 		{
-			throw new NotImplementedException();
+			var text = new string[2];
+
+			foreach (var classDetailInfo in methods)
+			{
+				methodsTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
+
+				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
+				{
+					methodsTextBuilder.Append($"{ClassInfo.ClassType} ");
+				}
+				else if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeAbstract, true) == 0)
+				{
+					methodsTextBuilder.Append($"{ClassInfo.ClassType} ");
+				}
+				else
+				{
+
+					foreach (var baseClassDetailInfo in baseClassDetailInfos)
+					{
+						if (classDetailInfo.MemberName.Equals(ToCodingStyle(baseClassDetailInfo.MemberName)))
+						{
+							if (classDetailInfo.MemberType.Equals(baseClassDetailInfo.MemberType))
+							{
+								methodsTextBuilder.Append("ovrride ");
+
+								text[0] = string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"var obj = base.{classDetailInfo.MemberName}();";
+								text[1] = string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;";
+								break;
+							}
+							else
+							{
+								return Message.DifferentMemberType(classDetailInfo.MemberName, classDetailInfo.MemberName, classDetailInfo.ClassName);
+							}	
+						}
+					}
+				}
+
+				methodsTextBuilder.AppendLine($"{classDetailInfo.DataType} {classDetailInfo.MemberName}()");
+				methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "{");
+
+				// void 검사
+				if (string.Compare(classDetailInfo.DataType, Constants.DataTypeVoid, true) == 0)
+				{
+					methodsTextBuilder.AppendLine();
+				}
+				else
+				{
+					if (text[0] != string.Empty)
+					{
+						methodsTextBuilder.AppendLine(text[0]);
+						methodsTextBuilder.AppendLine(text[1]);
+					}
+					else
+					{
+						var dataTypes = new List<string>() { "string", "bool", "byte", "char", "decimal", "double", "float", "int", "long", "sbyte", "short", "uint", "ulong", "ushort", };
+						var flag = false;
+						foreach (var dataType in dataTypes)
+						{
+							if (string.Compare(classDetailInfo.DataType, dataType, true) == 0)
+							{
+								flag = true;
+							}
+						}
+
+						if (flag is false)
+						{
+							methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"var obj = new {classDetailInfo.DataType}();");
+							methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
+						}
+						else
+						{
+							methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"{classDetailInfo.DataType} obj; // {classDetailInfo.DataType}에 맞는 value 설정할 것");
+							methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
+						}
+					}
+				}
+
+				methodsTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "}");
+
+				// Comment 검사
+				if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
+				{
+					methodsTextBuilder.AppendLine($" // {classDetailInfo.Comment}");
+					methodsTextBuilder.AppendLine();
+				}
+				else
+				{
+					methodsTextBuilder.AppendLine();
+					methodsTextBuilder.AppendLine();
+				}
+
+				methodsTextBuilder.AppendLine();
+			}
+			return string.Empty;
 		}
 
 		private string WriteBaseParentMethodsText(ref StringBuilder							  methodsTextBuilder , 
 																	 ClassInfoModel						  selectedClassInfo  , 
 																	 IEnumerable<ClassDetailInfoModel> methods			   )
 		{
-			throw new NotImplementedException();
+			var allClassDetailInfos = AllClassDetailInfos.Where(o => o.ClassName.Equals(BaseClassInfo.ClassName) is false);
+
+			foreach (var classDetailInfo in methods)
+			{
+				methodsTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
+
+				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
+				{
+					methodsTextBuilder.Append($"{ClassInfo.ClassType} ");
+				}
+				else if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeAbstract, true) == 0)
+				{
+					methodsTextBuilder.Append($"{ClassInfo.ClassType} ");
+				}
+				else
+				{
+				
+					foreach (var allClassDetailInfo in allClassDetailInfos)
+					{
+						if (classDetailInfo.MemberName.Equals(allClassDetailInfo.MemberName))
+						{
+							methodsTextBuilder.Append("virtual ");
+							break;
+						}
+					}
+				}
+			
+				// override
+				// 여기서 가져와서 
+				methodsTextBuilder.AppendLine($"{classDetailInfo.DataType} {classDetailInfo.MemberName}()");
+				methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "{");
+
+				// void 검사
+				if (string.Compare(classDetailInfo.DataType, Constants.DataTypeVoid, true) == 0)
+				{
+					methodsTextBuilder.AppendLine();
+				}
+				else
+				{
+						var dataTypes = new List<string>() { "string", "bool", "byte", "char", "decimal", "double", "float", "int", "long", "sbyte", "short", "uint", "ulong", "ushort", };
+						var flag = false;
+						foreach (var dataType in dataTypes)
+						{
+							if (string.Compare(classDetailInfo.DataType, dataType, true) == 0)
+							{
+								flag = true;
+							}
+						}
+
+						if (flag is false)
+						{
+							methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"var obj = new {classDetailInfo.DataType}();");
+							methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
+						}
+						else
+						{
+							methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"{classDetailInfo.DataType} obj; // {classDetailInfo.DataType}에 맞는 value 설정할 것");
+							methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
+						}
+				}
+
+				methodsTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "}");
+
+				// Comment 검사
+				if (string.IsNullOrWhiteSpace(classDetailInfo.Comment) == false)
+				{
+					methodsTextBuilder.AppendLine($" // {classDetailInfo.Comment}");
+					methodsTextBuilder.AppendLine();
+				}
+				else
+				{
+					methodsTextBuilder.AppendLine();
+					methodsTextBuilder.AppendLine();
+				}
+
+				methodsTextBuilder.AppendLine();
+			}
+
+			return string.Empty;
 		}
 
 		private string WriteMethodsText(ref StringBuilder methodsTextBuilder, IEnumerable<ClassDetailInfoModel> methods)
@@ -573,7 +727,7 @@ namespace Modules.CsvFile.Convert
 				methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "{");
 
 				// void 검사
-				if (string.Compare(classDetailInfo.DataType, DataTypeVoid, true) == 0)
+				if (string.Compare(classDetailInfo.DataType, Constants.DataTypeVoid, true) == 0)
 				{
 					methodsTextBuilder.AppendLine();
 				}
@@ -622,9 +776,9 @@ namespace Modules.CsvFile.Convert
 
 			return string.Empty;
 		}
-
 		#endregion
 
+		#region ConstantsText
 		public string  ConstantsText()
 		{
 			var errorResult = string.Empty;
@@ -635,9 +789,9 @@ namespace Modules.CsvFile.Convert
 			foreach (var classDetailInfo in constants)
 			{
 				// void 검사
-				if (string.Compare(classDetailInfo.DataType, "void", true) == 0)
+				if (string.Compare(classDetailInfo.DataType, Constants.DataTypeVoid, true) == 0)
 				{
-					errorResult = $"void :{classDetailInfo.MemberName}가 Method Type이 아닙니다.";
+					errorResult = Message.ThisMemberTypeIsNotVoidType(classDetailInfo.MemberName);
 					return errorResult;
 				}
 
@@ -676,8 +830,12 @@ namespace Modules.CsvFile.Convert
 			CodingTextResult.AppendLine();
 			return string.Empty;
 		}
+		#endregion
 
-		public string  ToCodingStyle(string memberName)
+		#endregion
+
+		#region private Methods
+		private string  ToCodingStyle          (string memberName)
 		{
 			var result = memberName.Trim();
 
@@ -685,8 +843,8 @@ namespace Modules.CsvFile.Convert
 
 			return result;
 		}
-
-		private string GetCodingStyle(string name)
+											           
+		private string GetCodingStyle         (string name)
 		{
 			var result = string.Empty;
 			var list = name.Split(' ');
@@ -714,7 +872,70 @@ namespace Modules.CsvFile.Convert
 			return false;
 		}
 
-		private string IsCompability(IEnumerable<ClassDetailInfoModel> classDetailInfos)
+		private string ResultOfSpacialText(IEnumerable<ClassDetailInfoModel> classDetailInfos)
+		{
+			string str = Constants.SpecialText;
+
+			foreach (var classDetailInfo in classDetailInfos)
+			{
+				var rex = new Regex(str);
+				var result = rex.IsMatch(classDetailInfo.MemberName);
+
+				if (result is true)
+					return Message.MemberHaveSpecialText(classDetailInfo.MemberName);
+			}
+			return string.Empty;
+		}
+
+	
+	
+		private string CheckingWhitespace (IEnumerable<ClassDetailInfoModel> classDetailInfos)
+		{
+			foreach (var classDetailInfo in classDetailInfos)
+			{
+				if (classDetailInfo.MemberName is null &&
+					classDetailInfo.MemberType is null &&
+					classDetailInfo.AccessModifier is null &&
+					classDetailInfo.DataType is null)
+				{
+					return Message.MemberNotHaveAllData;
+				}
+				else if (classDetailInfo.AccessModifier is null)
+				{
+					return Message.MemberNotHaveAccessModifier;
+				}
+				else if (classDetailInfo.DataType is null)
+				{
+					return Message.MemberNotHaveDataType;
+				}
+				else if (classDetailInfo.MemberName is null)
+				{
+					return Message.MemberNotHaveMemberName;
+				}
+				else if (classDetailInfo.MemberType is null)
+				{
+					return Message.MemberNotHaveMemberType;
+				}
+			}
+			return string.Empty;
+		}
+
+
+		private string CheckingDuplication(IEnumerable<ClassDetailInfoModel> classDetailInfos)
+		{
+			var doublicates = classDetailInfos.GroupBy(classDetailInfo => classDetailInfo.MemberName)
+									.Where(classDetailInfo => classDetailInfo.Count() > 1).Select(result => result.Key);
+
+			if (doublicates.Any() == true)
+			{
+				var duplicatredMemberName = doublicates.FirstOrDefault();
+				return Message.DuplicatedMemberNameExist(duplicatredMemberName);
+			}
+
+			return string.Empty;
+		}
+
+		private string IsCompability		 (IEnumerable<ClassDetailInfoModel> classDetailInfos)
 		{
 			var duplicatedMemberName = CheckingDuplication(classDetailInfos);
 			if (duplicatedMemberName != string.Empty) return duplicatedMemberName;
@@ -728,69 +949,7 @@ namespace Modules.CsvFile.Convert
 			return string.Empty;
 		}
 
-		public const string SpecialText = @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";
-		public static string MessageMemberHaveSpecialText(string member) => $"{member}에 특수문자가 들어갔습니다. 제외특수문자 : " + @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";
-		private string ResultOfSpacialText(IEnumerable<ClassDetailInfoModel> classDetailInfos)
-		{
-			string str = SpecialText;
-
-			foreach (var classDetailInfo in classDetailInfos)
-			{
-				var rex = new Regex(str);
-				var result = rex.IsMatch(classDetailInfo.MemberName);
-
-				if (result is true)
-					return MessageMemberHaveSpecialText(classDetailInfo.MemberName);
-			}
-			return string.Empty;
-		}
-
-		private string CheckingWhitespace(IEnumerable<ClassDetailInfoModel> classDetailInfos)
-		{
-			foreach (var classDetailInfo in classDetailInfos)
-			{
-				if (classDetailInfo.MemberName is null &&
-					classDetailInfo.MemberType is null &&
-					classDetailInfo.AccessModifier is null &&
-					classDetailInfo.DataType is null)
-				{
-					return "Member 자제가 공란인 행이 있습니다.";
-				}
-				else if (classDetailInfo.AccessModifier is null)
-				{
-					return "Access Modifier이 공란인 행이 있습니다";
-				}
-				else if (classDetailInfo.DataType is null)
-				{
-					return "DataType이 공란인 행이 있습니다";
-				}
-				else if (classDetailInfo.MemberName is null)
-				{
-					return "Member Name이 공란인 행이 있습니다.";
-				}
-				else if (classDetailInfo.MemberType is null)
-				{
-					return "Member Type이 공란인 행이 있습니다";
-				}
-			}
-			return string.Empty;
-		}
-
-		private string CheckingDuplication(IEnumerable<ClassDetailInfoModel> classDetailInfos)
-		{
-			var doublicates = classDetailInfos.GroupBy(classDetailInfo => classDetailInfo.MemberName)
-									.Where(classDetailInfo => classDetailInfo.Count() > 1).Select(result => result.Key);
-
-			if (doublicates.Any() == true)
-			{
-				var duplicatredMemberName = doublicates.FirstOrDefault();
-				return $"Member Name에 {duplicatredMemberName}(이)가 중복되었습니다.";
-			}
-
-			return string.Empty;
-		}
-
-		private bool   IsExist(IEnumerable<ClassDetailInfoModel> memberTypes)
+		private bool   IsExist				 (IEnumerable<ClassDetailInfoModel> memberTypes)
 		{
 			if (memberTypes.Count() == 0)
 			{
@@ -799,7 +958,10 @@ namespace Modules.CsvFile.Convert
 			return true;
 		}
 
-		private bool   IsDataEixst(ClassInfoModel baseClassInfo, List<ClassDetailInfoModel> baseClassDetailInfos, ClassInfoModel classInfo, List<ClassDetailInfoModel> classDetailInfos)
+		private bool   IsDataEixst(ClassInfoModel					baseClassInfo			, 
+										   List<ClassDetailInfoModel> baseClassDetailInfos , 
+											ClassInfoModel					classInfo				, 
+											List<ClassDetailInfoModel> classDetailInfos		)
 		{
 			if(classInfo	  != null			   &&
 				baseClassInfo != null		      &&
@@ -822,9 +984,37 @@ namespace Modules.CsvFile.Convert
 			return false;
 		}
 
-		public const string ClassTypeSealed = "sealed";
 
-		private string InitializeSelectedClass(ClassInfoModel classInfo,     List<ClassDetailInfoModel> classDetailInfos)
+		private Inheritance ParentOrChild			  (ClassInfoModel baseClassInfo, ClassInfoModel classInfo)
+		{
+			if (baseClassInfo.ClassType.Equals(Constants.ClassTypeStatic) is false &&
+				 baseClassInfo.ClassType.Equals(Constants.ClassTypeSealed) is false &&
+				 baseClassInfo.ClassName.Equals(classInfo.ClassName) is true)
+			{
+				return Inheritance.Parent;
+			}
+			return Inheritance.Child;
+		}
+
+		private void        SaveAllData				  (List<ClassDetailInfoModel> detailedInfos)
+		{
+			AllClassDetailInfos.Clear();
+
+			foreach (var detailedInfo in detailedInfos)
+			{
+				AllClassDetailInfos.Add(new ClassDetailInfoModel()
+				{
+					ClassName = detailedInfo.ClassName.Trim(),
+					AccessModifier = detailedInfo.AccessModifier.Trim(),
+					MemberName = ToCodingStyle(detailedInfo.MemberName),
+					MemberType = detailedInfo.MemberType.Trim(),
+					DataType = detailedInfo.DataType.Trim(),
+					Comment = detailedInfo.Comment is null ? string.Empty : detailedInfo.Comment.Trim()
+				});
+			}
+		}
+							     
+		private string      InitializeSelectedClass (ClassInfoModel classInfo,     List<ClassDetailInfoModel> classDetailInfos)
 		{
 			ClassInfo = new ClassInfoModel()
 			{
@@ -838,6 +1028,7 @@ namespace Modules.CsvFile.Convert
 			{
 				ClassDetailInfos.Add(new ClassDetailInfoModel()
 				{
+					ClassName = classDetailInfo.ClassName.Trim(),
 					AccessModifier = classDetailInfo.AccessModifier.Trim(),
 					MemberName = ToCodingStyle(classDetailInfo.MemberName),
 					MemberType = classDetailInfo.MemberType.Trim(),
@@ -847,8 +1038,8 @@ namespace Modules.CsvFile.Convert
 			}
 			return string.Empty;
 		}
-
-		private string InitializeBase			  (ClassInfoModel baseClassInfo, List<ClassDetailInfoModel> baseClassDetailInfos)
+							     
+		private string      InitializeBase			  (ClassInfoModel baseClassInfo, List<ClassDetailInfoModel> baseClassDetailInfos)
 		{		
 			BaseClassInfo = new ClassInfoModel()
 			{
@@ -874,14 +1065,14 @@ namespace Modules.CsvFile.Convert
 			return string.Empty;
 		}
 
-		private ClassDetailInfoModel VoidType(IEnumerable<ClassDetailInfoModel> membertypes) => membertypes.Where(o => o.DataType.Equals("void") is true).FirstOrDefault();
+		private ClassDetailInfoModel VoidType (IEnumerable<ClassDetailInfoModel> membertypes) => membertypes.Where(o => o.DataType.Equals(Constants.DataTypeVoid) is true).FirstOrDefault();
 
-		private string GetResultOfRemovingSpacialText(string result)								 => Regex.Replace(result, @"[^a-zA-Z0-9가-힣_]", "", RegexOptions.Singleline);
-																														 
-		private string FirstCharToUpper(string input)													 => input.First().ToString().ToUpper() + input.Substring(1);
-																														 
-		private string FirstCharToLower(string input)													 => input.First().ToString().ToLower() + input.Substring(1);
-
+		private string GetResultOfRemovingSpacialText(string result)								  => Regex.Replace(result, @"[^a-zA-Z0-9가-힣_]", "", RegexOptions.Singleline);
+																														  
+		private string FirstCharToUpper(string input)													  => input.First().ToString().ToUpper() + input.Substring(1);
+																														  
+		private string FirstCharToLower(string input)													  => input.First().ToString().ToLower() + input.Substring(1);
+		#endregion
 	}
 }
 

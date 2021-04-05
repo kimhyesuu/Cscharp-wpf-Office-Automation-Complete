@@ -43,7 +43,7 @@ namespace Modules.CsvFile.ViewModels
 			set => SetProperty(ref _newDataType, value); 
 		}
 
-		private string							  SelectedClassName									{ get;		 set;  }  // CreateClassDetailInfos : Receive, SendCodingText : Using
+		private string												 SelectedClassName				{ get;		 set;  }  // CreateClassDetailInfos : Receive, SendCodingText : Using
 
 		public  ObservableCollection<string>				 ClassAccessModifiers         { get;				 }
 		public  ObservableCollection<string>			    AccessModifiers					{ get;		  	    }
@@ -124,7 +124,6 @@ namespace Modules.CsvFile.ViewModels
 			var className		      = Receivedinfo.ClassName;
 			SelectedClassName       = className;
 			var allClassDetailInfos = _classDetailInfoService.GetAll();
-
 			var selectedclassDetailInfos = allClassDetailInfos.Where(classDetailInfo => classDetailInfo.ClassName.Equals(className));
 			if (_classDetailInfos.Count > 0) _classDetailInfos.Clear();
 
@@ -137,33 +136,21 @@ namespace Modules.CsvFile.ViewModels
 		private void   SendPriviewText()
 		{
 			var textResult              = string.Empty;
-			var emptyOrError				 = string.Empty;
-			var errorLogs               = new List<string>(); 
+			var errorLogs					 = new List<string>();
 			var convertingData          = new ConvertTo();
 			var selectedClassInfo       = ClassInfos.Where (classInfo => classInfo.ClassName.Equals(SelectedClassName)).FirstOrDefault();
 			var baseClassInfo				 = _classInfos.Where(o			=> o.ClassName.Equals(BaseClassName)				 ).FirstOrDefault();
-			var detailedInfos     		 = _classDetailInfoService.GetAll();
-
+			var detailedInfos				 = _classDetailInfoService.GetAll().ToList();
+			
+			CheckNewItems(ref detailedInfos);
+		
 			if (selectedClassInfo is null || detailedInfos.Count() == 0) return;
 
-			emptyOrError = convertingData.Initialize(baseClassInfo, selectedClassInfo, detailedInfos);
-			if (emptyOrError != string.Empty)
-			{
-				SendErrorLogging(emptyOrError);
-				return;
-			}
+			SendErrorLogging(string.Empty);
 
-			SendErrorLogging(emptyOrError);
+			errorLogs = GetErrorLogs(convertingData,baseClassInfo, selectedClassInfo, detailedInfos);
 
-			errorLogs.Add(convertingData.StartText()		 );
-			errorLogs.Add(convertingData.ConstantsText()  );
-			errorLogs.Add(convertingData.FieldsText()	    );
-			errorLogs.Add(convertingData.PropertiesText() );
-			errorLogs.Add(convertingData.ConstructorText());
-			//errorLogs.Add(convertingData.MethodsText()    );
-			convertingData.EndText();
-
-			if (IsCompability(errorLogs) is true)
+			if (IsCompability(errorLogs) is true && errorLogs != null)
 			{
 				textResult = convertingData.Result();
 				_eventAggregator.GetEvent<SendPreviewMessage>().Publish(textResult);	
@@ -171,67 +158,86 @@ namespace Modules.CsvFile.ViewModels
 			convertingData.Reset();
 		}
 
+		private void CheckNewItems(ref List<ClassDetailInfoModel> detailedInfos)
+		{
+			var checkNewClassDetailInfos = _classDetailInfos;
+			var selectedDetailedInfos = detailedInfos.Where(classInfo => classInfo.ClassName.Equals(SelectedClassName)).ToList();
+
+			if (checkNewClassDetailInfos.Count != selectedDetailedInfos.Count)
+			{
+				for (int index = selectedDetailedInfos.Count; index < checkNewClassDetailInfos.Count; index++)
+				{
+					if (_classDetailInfoService.CanDoAdd(checkNewClassDetailInfos[index]))
+					{
+						detailedInfos.Add(checkNewClassDetailInfos[index]);
+					}
+				}
+			}
+		}
+
 		private async void   SendResults()
-		{						
-			var convertingData = new ConvertTo();
-			var errorLogs      = new List<string>();
-			var resultlist     = new List<object>();
-			var textResult     = string.Empty;
+		{
+			var convertingData	 = new ConvertTo();
+			var errorLogs			 = new List<string>();
+			var resultlist			 = new List<object>();
+			var textResult			 = string.Empty;
+			var baseClassInfo		 = _classInfos.Where(o => o.ClassName.Equals(BaseClassName)).FirstOrDefault();
+			var detailedInfos		 = _classDetailInfoService.GetAll().ToList();
+
+			CheckNewItems(ref detailedInfos);
 
 			if (ClassDetailInfos.Count == 0 || ClassInfos.Count == 0)
 			{
-				Message.InfoOKMessage("Data가 없습니다.");
+				Message.InfoOKMessage(Message.ClassDetailInfosNotData);
 				return;
 			}
 
 			SendErrorLogging(string.Empty);
 
-			foreach (var classInfo in ClassInfos)
-			{
-				var reuslt = Task.Run(() => GetErrorLogs(classInfo, convertingData));
-				errorLogs = await reuslt;
+		
+				foreach (var classInfo in ClassInfos)
+				{
+					var reuslt = Task.Run(() => GetErrorLogs(convertingData, baseClassInfo, classInfo, detailedInfos));
+					errorLogs = await reuslt;
 
-				if (IsCompability(errorLogs) is true && errorLogs != null)
-				{
-					textResult = convertingData.Result();
-					resultlist.Add(new { className = classInfo.ClassName, text = textResult });
-					convertingData.Reset();
+					if (IsCompability(errorLogs) is true && errorLogs != null)
+					{
+						textResult = convertingData.Result();
+						resultlist.Add(new { className = classInfo.ClassName, text = textResult });
+						convertingData.Reset();
+					}
+					else
+					{
+						convertingData.Reset();
+						return;
+					}
 				}
-				else
-				{
-					convertingData.Reset();
-					return;
-				}
-			}
 
 			ClearData();			
 			_eventAggregator.GetEvent<SendSavingMessages>().Publish(resultlist);
 		}
-	
-		private List<string> GetErrorLogs(ClassInfoModel classInfo, ConvertTo convertingData)
+
+		private List<string> GetErrorLogs(ConvertTo								  convertingData	 , 
+													 ClassInfoModel						  baseClassInfo	 , 
+													 ClassInfoModel						  selectedClassInfo,
+													 IEnumerable<ClassDetailInfoModel> detailedInfos	  )
 		{
-			var errorLogs			   = new List<string>();
-			var DetailedInfosToThis = ClassDetailInfos.Where(classDetailInfo => classDetailInfo.ClassName.Equals(SelectedClassName));
-			if (DetailedInfosToThis.Count() == 0)
+			var errorLogs = new List<string>();
+
+			var emptyOrError = convertingData.Initialize(baseClassInfo, selectedClassInfo, detailedInfos);
+			if (emptyOrError != string.Empty)
 			{
+				SendErrorLogging(emptyOrError);
 				return null;
 			}
 
-			//var emptyOrError = convertingData.Initialize(classInfo, DetailedInfosToThis);
-			//if (emptyOrError != string.Empty)
-			//{
-			//	errorLogs.Add(emptyOrError);
-			//}
-
-			//convertingData.StartText();
-
-			//errorLogs.Add(convertingData.ConstantsText());
-			//errorLogs.Add(convertingData.FieldsText());
-			//errorLogs.Add(convertingData.PropertiesText());
-			//errorLogs.Add(convertingData.ConstructorText());
-			//errorLogs.Add(convertingData.MethodsText());
-
-			//convertingData.EndText();
+			errorLogs.Add(convertingData.StartText()	    );
+			errorLogs.Add(convertingData.ConstantsText()  );
+			errorLogs.Add(convertingData.FieldsText()     );
+			errorLogs.Add(convertingData.PropertiesText() );
+			errorLogs.Add(convertingData.ConstructorText());
+			errorLogs.Add(convertingData.MethodsText()    );
+			convertingData.EndText();
 
 			return errorLogs;
 		}
@@ -265,12 +271,12 @@ namespace Modules.CsvFile.ViewModels
 
 		private string IsCreatingCompability(ClassInfoModel receivedinfo)
 		{
-			if (receivedinfo is null) return "클래스 데이터가 없습니다.";
+			if (receivedinfo is null) return Message.ClassDetailInfosNotData;
 
 			var result = string.Compare(receivedinfo.AccessModifier, "public"  , true) == 0 ||
 							 string.Compare(receivedinfo.AccessModifier, "internal", true) == 0 ? true : false;
 
-			if(result is false) return $"AccessModifier {receivedinfo.AccessModifier}(이)가 올바르지 않습니다.";
+			if(result is false) return Message.WrongAccessModifier(receivedinfo.AccessModifier);
 
 			return string.Empty;
 		}
@@ -280,17 +286,17 @@ namespace Modules.CsvFile.ViewModels
 			if (string.IsNullOrWhiteSpace(addingNewtype) ||
 				 ClassDetailInfos.Count == 0)
 			{
-				SendErrorLogging("클래스 세부 사항 목록이 없거나 새로운 타입이 빈 공란입니다.");
+				SendErrorLogging(Message.ClassDetailInfosNoExistOrNewTypeIsEmpty);
 				return false;
 			}
 			else if (IsSpecialText(addingNewtype) is true)
 			{
-				SendErrorLogging("특수문자 제거해주세요.(제외한 특수문자 : <, >)");
+				SendErrorLogging(Message.DeleteSpecialText);
 				return false;
 			}
 			else if (IsDuplicatedDataType(addingNewtype) is true)
 			{
-				SendErrorLogging($"추가할 Data Type이 중복되었습니다.");
+				SendErrorLogging(Message.AddingDataTypeDuplicated);
 				return false;
 			}
 
@@ -299,7 +305,6 @@ namespace Modules.CsvFile.ViewModels
 
 		private bool   IsSpecialText(string addingNewtype)
 		{
-			// string str = @"[~!@\#$%^&*\()\=+|\\/:;?""<>']";		
 			string str = @"[~!@\#$%^&*\()\=+|\\/:;?""']";
 			var	 rex = new System.Text.RegularExpressions.Regex(str);
 			return rex.IsMatch(addingNewtype);
@@ -334,9 +339,9 @@ namespace Modules.CsvFile.ViewModels
 		private void   ClearData()
 		{
 			ClassInfos.Clear();
+			_classInfos.Clear();
+			_classDetailInfoService.Clear();
 			ClassDetailInfos.Clear();
-			ClassInfos = null;
-			ClassDetailInfos = null;
 		}
 
 		private void   Initialize()
