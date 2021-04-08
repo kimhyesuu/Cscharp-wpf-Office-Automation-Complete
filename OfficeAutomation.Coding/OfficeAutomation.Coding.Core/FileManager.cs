@@ -52,7 +52,7 @@ namespace OfficeAutomation.Coding.Core
 			return list;
 		}
 
-		private string   GetCsvPath()
+		private string  GetCsvPath()
 		{
 			string path = string.Empty;
 
@@ -62,7 +62,7 @@ namespace OfficeAutomation.Coding.Core
 			return path;
 		}
 
-		private void     SaveTxtFolderName(string selectedFilepath)
+		private void    SaveTxtFolderName(string selectedFilepath)
 		{
 			var fullName = selectedFilepath.Substring(selectedFilepath.LastIndexOf('\\') + 1);
 			TxtFolderName = fullName.Substring(0, fullName.LastIndexOf('.'));
@@ -77,7 +77,8 @@ namespace OfficeAutomation.Coding.Core
 			}
 
 			var TxtPath = resultFolderPath + $"\\{TxtFolderName}";
-			if (Directory.Exists(TxtPath) == false)
+
+			if (Directory.Exists(TxtPath) is false)
 			{
 				Directory.CreateDirectory(TxtPath);
 			}

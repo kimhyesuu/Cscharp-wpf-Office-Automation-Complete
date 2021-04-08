@@ -1,12 +1,19 @@
-﻿AnimalBase,Feed Kinds,good
-AnimalBase,Pain,good
-AnimalBase,Kinds,good
-Cat,Feed Kinds,good
-Cat,Pain,good
-Cat,Kinds,good
-Dog,Feed Kinds,good
-Dog,Pain,good
-Dog,Kinds,good
-Horse,Feed Kinds,good
-Horse,Pain,good
-Horse,Kinds,good
+﻿AnimalBase,species,종류
+AnimalBase,domesticate,가정동물
+AnimalBase,noise,소리
+Cat,name,이름
+Cat,age,나이
+Cat,species,
+Cat,noise,
+Dog,name,이름
+Dog,age,나이
+Dog,species,
+Dog,noise,
+Fox,name,이름
+Fox,age,나이
+Fox,species,
+Fox,noise,
+Horse,name,이름
+Horse,age,나이
+Horse,species,
+Horse,noise,

@@ -369,10 +369,6 @@ namespace Modules.CsvFile.Convert
 				{
 					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
 				}
-				else if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeAbstract, true) == 0)
-				{
-					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
-				}
 
 				propertiesTextBuilder.Append($"{classDetailInfo.DataType} {classDetailInfo.MemberName} ");
 				propertiesTextBuilder.Append("{ ");
@@ -405,10 +401,6 @@ namespace Modules.CsvFile.Convert
 
 				// ClassInfo
 				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
-				{
-					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
-				}
-				else if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeAbstract, true) == 0)
 				{
 					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
 				}
@@ -465,7 +457,7 @@ namespace Modules.CsvFile.Convert
 				//{
 				//	propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
 				//}
-				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeAbstract, true) == 0)
+				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
 				{
 					propertiesTextBuilder.Append($"{ClassInfo.ClassType} ");
 				}
@@ -539,13 +531,8 @@ namespace Modules.CsvFile.Convert
 				{
 					methodsTextBuilder.Append($"{ClassInfo.ClassType} ");
 				}
-				else if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeAbstract, true) == 0)
-				{
-					methodsTextBuilder.Append($"{ClassInfo.ClassType} ");
-				}
 				else
 				{
-
 					foreach (var baseClassDetailInfo in baseClassDetailInfos)
 					{
 						if (classDetailInfo.MemberName.Equals(ToCodingStyle(baseClassDetailInfo.MemberName)))
@@ -636,10 +623,6 @@ namespace Modules.CsvFile.Convert
 				methodsTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + $"{classDetailInfo.AccessModifier} ");
 
 				if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeStatic, true) == 0)
-				{
-					methodsTextBuilder.Append($"{ClassInfo.ClassType} ");
-				}
-				else if (string.Compare(ClassInfo.ClassType, Constants.ClassTypeAbstract, true) == 0)
 				{
 					methodsTextBuilder.Append($"{ClassInfo.ClassType} ");
 				}

@@ -121,9 +121,9 @@ namespace Modules.CsvFile.ViewModels
 			
 			SendErrorLogging(emptyOrError);
 
-			var className		      = Receivedinfo.ClassName;
-			SelectedClassName       = className;
-			var allClassDetailInfos = _classDetailInfoService.GetAll();
+			var className					  = Receivedinfo.ClassName;
+			SelectedClassName				  = className;
+			var allClassDetailInfos		  = _classDetailInfoService.GetAll();
 			var selectedclassDetailInfos = allClassDetailInfos.Where(classDetailInfo => classDetailInfo.ClassName.Equals(className));
 			if (_classDetailInfos.Count > 0) _classDetailInfos.Clear();
 

@@ -27,3 +27,4 @@ C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeA
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\Modules\Modules.Coding\obj\Debug\Modules.Coding.csproj.CopyComplete
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\Modules\Modules.Coding\obj\Debug\Modules.Coding.dll
 C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\Modules\Modules.Coding\obj\Debug\Modules.Coding.pdb
+C:\Users\juid0\OneDrive\바탕 화면\ProjectManagement\OfficeAutomation\OfficeAutomation.Coding\Modules\Modules.Coding\obj\Debug\Modules.Coding.csprojAssemblyReference.cache

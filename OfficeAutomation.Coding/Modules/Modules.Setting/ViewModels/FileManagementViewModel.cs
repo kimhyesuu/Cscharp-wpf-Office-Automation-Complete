@@ -8,6 +8,7 @@ using Prism.Mvvm;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Windows;
 
 namespace Modules.Setting.ViewModels
 {
@@ -15,18 +16,40 @@ namespace Modules.Setting.ViewModels
 	{
 		private readonly IClassService<ClassDetailInfoModel> _classDetailInfoService;
 
-		public DelegateCommand ImportCommand     { get; private set; }
-		public DelegateCommand ExportCommand     { get; private set; }
-		public DelegateCommand OpenFolderCommand { get; private set; }
+		private List<object>    ExportList			{ get;			set; }
+		public  DelegateCommand ImportCommand     { get; private set; }
+		public  DelegateCommand ExportCommand     { get; private set; }
+		public  DelegateCommand OpenFolderCommand { get; private set; }
 		
 		public FileManagementViewModel(IEventAggregator eventAggregator)
 		{
 			eventAggregator.GetEvent<SendSavingMessages>().Subscribe(MessagesReceived);
 			_classDetailInfoService = new ClassDetailInfoService();
 			ImportCommand				= new DelegateCommand(OpenCsvFile);
+			ExportCommand				= new DelegateCommand(ExportCoding);
 			OpenFolderCommand			= new DelegateCommand(OpenFolder);
 		}
-	
+
+		private void ExportCoding()
+		{
+			var className = string.Empty;
+			var text		  = string.Empty;
+			var messageBoxResult = MessageBox.Show("Export하시겠습니까?" , "EXPORT", MessageBoxButton.OKCancel);
+
+			if (messageBoxResult == MessageBoxResult.Cancel) return;
+
+			foreach (var exportText in ExportList)
+			{
+				var results = exportText.GetType().GetProperties();
+				className   = results[0].GetValue(exportText, null).ToString();
+				text        = results[1].GetValue(exportText, null).ToString();
+				FileManager.CreateTxtFile(className.ToString());
+				FileManager.WriteTXT(text.ToString());
+			}
+
+			Message.InfoOKMessage("성공적으로 저장했습니다.");
+		}
+
 		private void OpenFolder()
 		{
 			var path = FileManager.CsvPath;
@@ -41,7 +64,7 @@ namespace Modules.Setting.ViewModels
 		{
 			var selectedFilepath     = string.Empty;
 			var openFileDlg		    = new Microsoft.Win32.OpenFileDialog();
-			FileManager CsvFileDlg = new FileManager(openFileDlg);
+			FileManager CsvFileDlg   = new FileManager(openFileDlg);
 
 			CsvFileDlg.Initialize();
 			selectedFilepath			 = CsvFileDlg.GetDialogFilePath();
@@ -80,17 +103,7 @@ namespace Modules.Setting.ViewModels
 			return true;
 		}
 
-		private bool IsOPenNewFileWithoutSaving()
-		{
-			var result = Message.InfoMessage("변환 데이터를 저장안하십니까?");
-
-			if (result == System.Windows.MessageBoxResult.OK)
-			{
-				return true;
-			}
-
-			return false;
-		}
+		private bool IsOPenNewFileWithoutSaving() => Message.InfoMessage("변환 데이터를 저장안하십니까?") == MessageBoxResult.OK ? true : false;
 
 		private List<ClassDetailInfoModel> CSVToObjects(string[] lines)
 		{
@@ -112,18 +125,13 @@ namespace Modules.Setting.ViewModels
 
 		private void MessagesReceived(List<object> convertedResults)
 		{
-			var className = string.Empty;
-			var text = string.Empty;
+			if (ExportList != null) ExportList.Clear();
+			else							ExportList = new List<object>();
+
 			foreach (var convertedResult in convertedResults)
 			{
-				var results = convertedResult.GetType().GetProperties();
-				className = results[0].GetValue(convertedResult, null).ToString();
-				text		 = results[1].GetValue(convertedResult, null).ToString();
-				FileManager.CreateTxtFile(className.ToString());
-				FileManager.WriteTXT(text.ToString());
+				ExportList.Add(convertedResult);
 			}
-
-			Message.InfoOKMessage("성공적으로 저장했습니다.");
 		}
 	}
 }
