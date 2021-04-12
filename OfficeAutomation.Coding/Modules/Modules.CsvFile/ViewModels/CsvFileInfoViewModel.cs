@@ -150,7 +150,7 @@ namespace Modules.CsvFile.ViewModels
 
 			errorLogs = GetErrorLogs(convertingData,baseClassInfo, selectedClassInfo, detailedInfos);
 
-			if (IsCompability(errorLogs) is true && errorLogs != null)
+			if (IsCompatibility(errorLogs) is true && errorLogs != null)
 			{
 				textResult = convertingData.Result();
 				_eventAggregator.GetEvent<SendPreviewMessage>().Publish(textResult);	
@@ -158,7 +158,7 @@ namespace Modules.CsvFile.ViewModels
 			convertingData.Reset();
 		}
 
-		private void CheckNewItems(ref List<ClassDetailInfoModel> detailedInfos)
+		private void   CheckNewItems(ref List<ClassDetailInfoModel> detailedInfos)
 		{
 			var checkNewClassDetailInfos = _classDetailInfos;
 			var selectedDetailedInfos = detailedInfos.Where(classInfo => classInfo.ClassName.Equals(SelectedClassName)).ToList();
@@ -194,24 +194,22 @@ namespace Modules.CsvFile.ViewModels
 
 			SendErrorLogging(string.Empty);
 
-		
-				foreach (var classInfo in ClassInfos)
-				{
-					var reuslt = Task.Run(() => GetErrorLogs(convertingData, baseClassInfo, classInfo, detailedInfos));
-					errorLogs = await reuslt;
 
-					if (IsCompability(errorLogs) is true && errorLogs != null)
-					{
-						textResult = convertingData.Result();
-						resultlist.Add(new { className = classInfo.ClassName, text = textResult });
-						convertingData.Reset();
-					}
-					else
-					{
-						convertingData.Reset();
-						return;
-					}
+			foreach (var classInfo in ClassInfos)
+			{
+				var reuslts = Task.Run(() => GetErrorLogs(convertingData, baseClassInfo, classInfo, detailedInfos));
+				errorLogs   = await reuslts;
+
+				if (IsCompatibility(errorLogs) is false && errorLogs is null)
+				{
+					Clear(convertingData, errorLogs);					
+					return;
 				}
+
+				textResult = convertingData.Result();
+				resultlist.Add(new { className = classInfo.ClassName, text = textResult });
+				Clear(convertingData, errorLogs);
+			}
 
 			ClearData();			
 			_eventAggregator.GetEvent<SendSavingMessages>().Publish(resultlist);
@@ -256,8 +254,10 @@ namespace Modules.CsvFile.ViewModels
 			_eventAggregator.GetEvent<SendLog>().Publish(errorLog);
 		}
 
-		private bool   IsCompability(List<string> errorLogs)
+		private bool   IsCompatibility(List<string> errorLogs)
 		{
+			if (errorLogs is null) return false;
+
 			foreach (var errorLog in errorLogs)
 			{
 				if (errorLog != string.Empty)
@@ -334,6 +334,12 @@ namespace Modules.CsvFile.ViewModels
 				}
 			}
 			return false;
+		}
+
+		private void   Clear(ConvertTo convertingData, List<string> errorLogs)
+		{
+			convertingData.Reset();
+			errorLogs.Clear();
 		}
 
 		private void   ClearData()

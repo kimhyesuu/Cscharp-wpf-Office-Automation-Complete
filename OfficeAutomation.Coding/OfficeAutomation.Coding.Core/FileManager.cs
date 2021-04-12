@@ -87,7 +87,7 @@ namespace OfficeAutomation.Coding.Core
 			using (FileStream fs = File.Create(TxtFile)) { };
 		}
 
-		public static void WriteTXT(string text)
+		public static void WriteTxt(string text)
 		{
 			using (FileStream file = new FileStream(TxtFile, FileMode.Append, FileAccess.Write, FileShare.ReadWrite))
 			{

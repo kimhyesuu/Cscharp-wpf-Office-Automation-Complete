@@ -16,10 +16,10 @@ namespace Modules.Setting.ViewModels
 	{
 		private readonly IClassService<ClassDetailInfoModel> _classDetailInfoService;
 
-		private List<object>    ExportList			{ get;			set; }
-		public  DelegateCommand ImportCommand     { get; private set; }
-		public  DelegateCommand ExportCommand     { get; private set; }
-		public  DelegateCommand OpenFolderCommand { get; private set; }
+		private List<object>    ReceivedCoidingTextList	 { get;			 set; }
+		public  DelegateCommand ImportCommand				 { get; private set; }
+		public  DelegateCommand ExportCommand				 { get; private set; }
+		public  DelegateCommand OpenFolderCommand			 { get; private set; }
 		
 		public FileManagementViewModel(IEventAggregator eventAggregator)
 		{
@@ -32,19 +32,24 @@ namespace Modules.Setting.ViewModels
 
 		private void ExportCoding()
 		{
-			var className = string.Empty;
-			var text		  = string.Empty;
-			var messageBoxResult = MessageBox.Show("Export하시겠습니까?" , "EXPORT", MessageBoxButton.OKCancel);
+			var className			= string.Empty;
+			var text					= string.Empty;
+			var exportList			= ReceivedCoidingTextList;
+			var messageBoxResult = Message.InfoOkCancelMessage("Export하시겠습니까?"); 
 
 			if (messageBoxResult == MessageBoxResult.Cancel) return;
 
-			foreach (var exportText in ExportList)
+			foreach (var exportText in exportList)
 			{
 				var results = exportText.GetType().GetProperties();
 				className   = results[0].GetValue(exportText, null).ToString();
 				text        = results[1].GetValue(exportText, null).ToString();
-				FileManager.CreateTxtFile(className.ToString());
-				FileManager.WriteTXT(text.ToString());
+
+				if(className != null && text != null)
+				{
+					FileManager.CreateTxtFile(className.ToString());
+					FileManager.WriteTxt(text.ToString());
+				}	
 			}
 
 			Message.InfoOKMessage("성공적으로 저장했습니다.");
@@ -125,12 +130,12 @@ namespace Modules.Setting.ViewModels
 
 		private void MessagesReceived(List<object> convertedResults)
 		{
-			if (ExportList != null) ExportList.Clear();
-			else							ExportList = new List<object>();
+			if (ReceivedCoidingTextList != null) ReceivedCoidingTextList.Clear();
+			else							ReceivedCoidingTextList = new List<object>();
 
 			foreach (var convertedResult in convertedResults)
 			{
-				ExportList.Add(convertedResult);
+				ReceivedCoidingTextList.Add(convertedResult);
 			}
 		}
 	}

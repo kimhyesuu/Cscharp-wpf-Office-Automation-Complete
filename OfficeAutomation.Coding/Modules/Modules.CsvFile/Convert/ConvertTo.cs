@@ -31,7 +31,7 @@ namespace Modules.CsvFile.Convert
 		private  List<ClassDetailInfoModel> ClassDetailInfos     { get; set; }
 		private  StringBuilder					CodingTextResult	   { get;      }
 		#endregion
-
+		
 		#region Constructor
 		public ConvertTo()
 		{
@@ -201,7 +201,7 @@ namespace Modules.CsvFile.Convert
 
 		#region FieldsText
 
-		public string  FieldsText()
+		internal string  FieldsText()
 		{
 			var errorResult			 = string.Empty;
 			var fieldsTextBuilder    = CodingTextResult;
@@ -412,7 +412,7 @@ namespace Modules.CsvFile.Convert
 						{
 							if(classDetailInfo.MemberType.Equals(baseClassDetailInfo.MemberType) is true)
 							{
-								propertiesTextBuilder.Append("ovrride ");
+								propertiesTextBuilder.Append("override ");
 							}
 							else
 							{
@@ -521,7 +521,7 @@ namespace Modules.CsvFile.Convert
 																	List<ClassDetailInfoModel>        baseClassDetailInfos , 
 																	IEnumerable<ClassDetailInfoModel> methods					 )
 		{
-			var text = new string[2];
+			var text = new string[3];
 
 			foreach (var classDetailInfo in methods)
 			{
@@ -539,10 +539,10 @@ namespace Modules.CsvFile.Convert
 						{
 							if (classDetailInfo.MemberType.Equals(baseClassDetailInfo.MemberType))
 							{
-								methodsTextBuilder.Append("ovrride ");
-
-								text[0] = string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"var obj = base.{classDetailInfo.MemberName}();";
-								text[1] = string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;";
+								methodsTextBuilder.Append("override ");
+								text[0] = string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"var obj = ";
+								text[1] = $"base.{classDetailInfo.MemberName}();";
+								text[2] = string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;";
 								break;
 							}
 							else
@@ -556,42 +556,55 @@ namespace Modules.CsvFile.Convert
 				methodsTextBuilder.AppendLine($"{classDetailInfo.DataType} {classDetailInfo.MemberName}()");
 				methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "{");
 
-				// void 검사
+				// void 검사 여기 고치자
 				if (string.Compare(classDetailInfo.DataType, Constants.DataTypeVoid, true) == 0)
-				{
-					methodsTextBuilder.AppendLine();
-				}
-				else
-				{
-					if (text[0] != string.Empty)
+				{						
+					if(text[1] != string.Empty)
 					{
-						methodsTextBuilder.AppendLine(text[0]);
-						methodsTextBuilder.AppendLine(text[1]);
+						methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + text[1]);
+						text[0] = string.Empty;
+						text[1] = string.Empty;
+						text[2] = string.Empty;
 					}
 					else
 					{
-						var dataTypes = new List<string>() { "string", "bool", "byte", "char", "decimal", "double", "float", "int", "long", "sbyte", "short", "uint", "ulong", "ushort", };
-						var flag = false;
-						foreach (var dataType in dataTypes)
-						{
-							if (string.Compare(classDetailInfo.DataType, dataType, true) == 0)
-							{
-								flag = true;
-							}
-						}
-
-						if (flag is false)
-						{
-							methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"var obj = new {classDetailInfo.DataType}();");
-							methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
-						}
-						else
-						{
-							methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"{classDetailInfo.DataType} obj; // {classDetailInfo.DataType}에 맞는 value 설정할 것");
-							methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
-						}
+						methodsTextBuilder.AppendLine();
 					}
 				}
+				else if (text[0] != null && text[1] != string.Empty)
+				{
+					methodsTextBuilder.Append(text[0]);
+					methodsTextBuilder.AppendLine(text[1]);
+					methodsTextBuilder.AppendLine(text[2]);
+					text[0] = string.Empty;
+					text[1] = string.Empty;
+					text[2] = string.Empty;
+
+				}
+				else
+				{
+					var dataTypes = new List<string>() { "string", "bool", "byte", "char", "decimal", "double", "float", "int", "long", "sbyte", "short", "uint", "ulong", "ushort", };
+					var flag = false;
+					foreach (var dataType in dataTypes)
+					{
+						if (string.Compare(classDetailInfo.DataType, dataType, true) == 0)
+						{
+							flag = true;
+						}
+					}
+
+					if (flag is false)
+					{
+						methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"var obj = new {classDetailInfo.DataType}();");
+						methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
+					}
+					else
+					{
+						methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + $"{classDetailInfo.DataType} obj; // {classDetailInfo.DataType}에 맞는 value 설정할 것");
+						methodsTextBuilder.AppendLine(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount + 3) + "return obj;");
+					}
+				}
+
 
 				methodsTextBuilder.Append(string.Empty.PadRight(5) + string.Empty.PadRight(spaceCount) + "}");
 
@@ -607,7 +620,6 @@ namespace Modules.CsvFile.Convert
 					methodsTextBuilder.AppendLine();
 				}
 
-				methodsTextBuilder.AppendLine();
 			}
 			return string.Empty;
 		}
@@ -987,11 +999,11 @@ namespace Modules.CsvFile.Convert
 			{
 				AllClassDetailInfos.Add(new ClassDetailInfoModel()
 				{
-					ClassName = detailedInfo.ClassName.Trim(),
-					AccessModifier = detailedInfo.AccessModifier.Trim(),
-					MemberName = ToCodingStyle(detailedInfo.MemberName),
-					MemberType = detailedInfo.MemberType.Trim(),
-					DataType = detailedInfo.DataType.Trim(),
+					ClassName = detailedInfo.ClassName is null ? string.Empty : detailedInfo.ClassName.Trim(),
+					AccessModifier = detailedInfo.AccessModifier is null ? string.Empty : detailedInfo.AccessModifier.Trim(),
+					MemberName = detailedInfo.MemberName is null ? string.Empty : ToCodingStyle(detailedInfo.MemberName),
+					MemberType = detailedInfo.MemberType is null ? string.Empty : detailedInfo.MemberType.Trim(),
+					DataType = detailedInfo.DataType is null ?  string.Empty :  detailedInfo.DataType.Trim(),
 					Comment = detailedInfo.Comment is null ? string.Empty : detailedInfo.Comment.Trim()
 				});
 			}

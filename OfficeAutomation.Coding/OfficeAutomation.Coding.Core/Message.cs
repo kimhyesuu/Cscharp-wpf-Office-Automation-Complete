@@ -42,5 +42,18 @@ namespace OfficeAutomation.Coding.Core
 		{
 			MessageBox.Show(Message, "정보", MessageBoxButton.OK);
 		}
+
+		public static MessageBoxResult InfoOkCancelMessage(string Message)
+		{
+			var result = MessageBox.Show(Message, "정보", MessageBoxButton.OKCancel);
+
+			if (result == MessageBoxResult.OK)
+			{
+				return MessageBoxResult.OK;
+			}
+
+			return MessageBoxResult.No;
+		}
+
 	}
 }
